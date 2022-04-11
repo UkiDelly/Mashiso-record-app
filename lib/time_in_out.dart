@@ -172,8 +172,8 @@ class _TimeInOutState extends State<TimeInOut> {
                   children: [
                     //Time in
                     Container(
-                      width: 200,
-                      height: 200,
+                      width: MediaQuery.of(context).size.width * 0.4,
+                      height: MediaQuery.of(context).size.width * 0.4,
                       decoration: BoxDecoration(
                           color: (timeIn == false)
                               ? Colors.transparent
@@ -194,7 +194,7 @@ class _TimeInOutState extends State<TimeInOut> {
                             child: Text(
                           "Time in",
                           style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 40),
+                              fontWeight: FontWeight.bold, fontSize: 30),
                         )),
                       ),
                     ),
@@ -206,8 +206,8 @@ class _TimeInOutState extends State<TimeInOut> {
 
                     //Time out
                     Container(
-                      width: 200,
-                      height: 200,
+                      width: MediaQuery.of(context).size.width * 0.4,
+                      height: MediaQuery.of(context).size.width * 0.4,
                       decoration: BoxDecoration(
                           color: (timeIn == false)
                               ? const Color(0xffFDBF05)
@@ -228,7 +228,7 @@ class _TimeInOutState extends State<TimeInOut> {
                             child: Text(
                           "Time out",
                           style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 40),
+                              fontWeight: FontWeight.bold, fontSize: 25),
                         )),
                       ),
                     )
