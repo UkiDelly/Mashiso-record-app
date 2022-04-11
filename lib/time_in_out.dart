@@ -17,7 +17,7 @@ class _TimeInOutState extends State<TimeInOut> {
   PageController pageController = PageController(initialPage: 0);
   int currentIndex = 0;
   bool timeIn = false;
-  late GoogleMapController mapController;
+  // late GoogleMapController mapController;
   //Google map
   // late GoogleMapController mapController;
   // final LatLng _center = const LatLng(45.521563, -122.677433);
