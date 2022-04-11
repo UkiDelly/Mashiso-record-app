@@ -26,11 +26,6 @@ class _RecordState extends State<Record> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: GoogleMap(
-        onMapCreated: _onMapCreated,
-        initialCameraPosition: CameraPosition(target: _center, zoom: 11),
-      ),
-    );
+    return const Scaffold(body: SizedBox());
   }
 }
