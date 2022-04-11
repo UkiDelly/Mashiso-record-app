@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:location/location.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:work_record_app/Record.dart';
 import 'package:work_record_app/login.dart';
@@ -20,7 +21,21 @@ class _TimeInOutState extends State<TimeInOut> {
 
   //Google map
   late GoogleMapController mapController;
-  final LatLng _center = const LatLng(10.682024, 122.954228);
+  final LatLng _position = const LatLng(10.682024, 122.954228);
+
+  // set the location when the map created
+  void _onMapCreated(GoogleMapController controller) {
+    mapController = controller;
+
+    // listen for the location
+    location.onLocationChanged.listen((l) {
+      mapController.animateCamera(CameraUpdate.newCameraPosition(
+          CameraPosition(target: LatLng(l.latitude!, l.longitude!), zoom: 70)));
+    });
+  }
+
+  //Get Location
+  Location location = Location();
   //
   _createData() async {
     final userCollection =
@@ -39,10 +54,6 @@ class _TimeInOutState extends State<TimeInOut> {
     });
     pageController.animateToPage(index,
         duration: const Duration(milliseconds: 200), curve: Curves.ease);
-  }
-
-  void _onMapCreated(GoogleMapController controller) {
-    mapController = controller;
   }
 
   @override
@@ -242,9 +253,19 @@ class _TimeInOutState extends State<TimeInOut> {
       decoration: BoxDecoration(
           border: Border.all(width: 3, color: const Color(0xffFDBF05)),
           borderRadius: const BorderRadius.all(Radius.circular(25))),
-      child: GoogleMap(
-        onMapCreated: _onMapCreated,
-        initialCameraPosition: CameraPosition(target: _center, zoom: 100),
+      child: ClipRRect(
+        borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(20),
+            topRight: Radius.circular(20),
+            bottomRight: Radius.circular(20),
+            bottomLeft: Radius.circular(20)),
+        child: GoogleMap(
+          myLocationButtonEnabled: true,
+          mapType: MapType.normal,
+          onMapCreated: _onMapCreated,
+          initialCameraPosition: CameraPosition(target: _position, zoom: 70),
+          myLocationEnabled: true,
+        ),
       ),
     );
   }
