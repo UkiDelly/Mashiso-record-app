@@ -21,7 +21,7 @@ class _Home extends State<Home> with AutomaticKeepAliveClientMixin {
   //
   PageController pageController = PageController(initialPage: 0);
   int currentIndex = 0;
-  late bool? status;
+  late bool? status = false;
   var address;
   DateTime time = DateTime.now();
 
@@ -39,8 +39,6 @@ class _Home extends State<Home> with AutomaticKeepAliveClientMixin {
         address = "LatLng: ${location.latitude} , ${location.longitude}";
       });
     });
-    // final currentLocation = await location.getLocation();
-    // return "LatLng: ${currentLocation.latitude} , ${currentLocation.longitude}";
 
     //TODO: send firebase the location info
   }

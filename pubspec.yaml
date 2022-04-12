@@ -37,6 +37,7 @@ dependencies:
   geocoding:
   http:
   shared_preferences: 
+  intl:
 
 
   # The following adds the Cupertino Icons font to your application.
