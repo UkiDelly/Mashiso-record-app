@@ -1,53 +1,74 @@
-import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:location/location.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:work_record_app/Record.dart';
+import 'package:work_record_app/google_map.dart';
 import 'package:work_record_app/login.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:work_record_app/preferences.dart';
 
-class TimeInOut extends StatefulWidget {
-  const TimeInOut({Key? key}) : super(key: key);
+// ignore: must_be_immutable
+class Home extends StatefulWidget {
+  Location location;
+  String name;
+  Home({Key? key, required this.name, required this.location})
+      : super(key: key);
 
   @override
-  State<TimeInOut> createState() => _TimeInOutState();
+  State<Home> createState() => _Home();
 }
 
-class _TimeInOutState extends State<TimeInOut> {
+class _Home extends State<Home> with AutomaticKeepAliveClientMixin {
   //
   PageController pageController = PageController(initialPage: 0);
   int currentIndex = 0;
-  bool timeIn = false;
+  late bool? status = false;
+  var address;
+  DateTime time = DateTime.now();
 
-  //Google map
+  //*Google map
   late GoogleMapController mapController;
   final LatLng _position = const LatLng(10.682024, 122.954228);
 
-  // set the location when the map created
-  void _onMapCreated(GoogleMapController controller) {
-    mapController = controller;
+  //*Location
+  Location location = Location();
 
-    // listen for the location
-    location.onLocationChanged.listen((l) {
-      mapController.animateCamera(CameraUpdate.newCameraPosition(
-          CameraPosition(target: LatLng(l.latitude!, l.longitude!), zoom: 70)));
+  //*Get the current location
+  getCurrentLocation() {
+    location.onLocationChanged.listen((location) {
+      setState(() {
+        address = location;
+      });
     });
   }
 
-  //Get Location
-  Location location = Location();
-  //
-  _createData() async {
-    final userCollection =
-        await FirebaseFirestore.instance.collection('employee').get();
+  // //*Service and permission
+  // late bool _serviceEnabled;
+  // late PermissionStatus _permissionGranted;
 
-    //get the data
-    var data = userCollection.docs[0].exists;
+  // //*check the permission
+  // checkPermission() async {
+  //   //check the service in enabled
+  //   _serviceEnabled = await location.serviceEnabled();
+  //   if (!_serviceEnabled) {
+  //     _serviceEnabled = await location.requestService();
+  //   }
 
-    print(data);
-  }
+  //   //*check the permission is enabled
+  //   _permissionGranted = await location.hasPermission();
+  //   if (_permissionGranted == PermissionStatus.denied) {
+  //     _permissionGranted = await location.requestPermission();
+  //   }
 
-  //Change the page
+  //   setState(() {
+  //     _serviceEnabled;
+  //     _permissionGranted;
+  //   });
+  // }
+
+  //*Change the page
   _changePage(int index) {
     setState(() {
       currentIndex = index;
@@ -56,17 +77,78 @@ class _TimeInOutState extends State<TimeInOut> {
         duration: const Duration(milliseconds: 200), curve: Curves.ease);
   }
 
-  @override
-  void initState() {
-    super.initState();
+  //*Send Firebase
+  timeInUpload(var time, var address) async {
+    var _userId = LoginPreferences.getUserId();
+    final _employee = await FirebaseFirestore.instance
+        .collection('employee')
+        .doc(_userId)
+        .collection('record')
+        .add({
+      'status': "time in",
+      'time': Timestamp.fromDate(time),
+      'location': GeoPoint(address.latitude, address.longitude)
+    });
+
+    Fluttertoast.showToast(
+        msg: "Successfully Time in!",
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.TOP,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.grey,
+        textColor: Colors.white,
+        fontSize: 20.0);
+  }
+
+  timeOutUpLoad() async {
+    var _userId = LoginPreferences.getUserId();
+    final _employee = await FirebaseFirestore.instance
+        .collection('employee')
+        .doc(_userId)
+        .collection('record')
+        .add({
+      'status': "time out",
+      'time': Timestamp.fromDate(time),
+      'location': GeoPoint(address.latitude, address.longitude)
+    });
+
+    Fluttertoast.showToast(
+        msg: "Successfully Time Out!",
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.TOP,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.grey,
+        textColor: Colors.white,
+        fontSize: 20.0);
   }
 
   @override
+  void initState() {
+    super.initState();
+    // check permission
+    // WidgetsBinding.instance?.addPostFrameCallback((_) => checkPermission());
+    location = widget.location;
+
+    //bring the last state of the time in/out
+    status = LoginPreferences.getInOut();
+
+    //get the current location
+    address = "Not press yet";
+    getCurrentLocation();
+  }
+
+  @override
+  bool get wantKeepAlive => true;
+
+  @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Scaffold(
       body: ScrollConfiguration(
         behavior: MyBehavior(),
         child: PageView(
+          scrollDirection: Axis.horizontal,
+          physics: const NeverScrollableScrollPhysics(),
           controller: pageController,
           children: [_home(), const Record()],
         ),
@@ -76,12 +158,17 @@ class _TimeInOutState extends State<TimeInOut> {
       bottomNavigationBar: BottomNavigationBar(
         elevation: 10,
         currentIndex: currentIndex,
-        onTap: (index) {
+        onTap: (index) async {
           if (index == 2) {
+            //Logout if the logout button is pressed
+            await LoginPreferences.saveUserId("empty_user_id");
             Navigator.pushReplacement(
                 context,
                 PageTransition(
-                    child: const Login(), type: PageTransitionType.fade));
+                    child: Login(
+                      location: widget.location,
+                    ),
+                    type: PageTransitionType.fade));
           }
           _changePage(index);
         },
@@ -106,6 +193,7 @@ class _TimeInOutState extends State<TimeInOut> {
     );
   }
 
+  // Home screen
   Widget _home() {
     return SingleChildScrollView(
       child: Center(
@@ -136,26 +224,22 @@ class _TimeInOutState extends State<TimeInOut> {
                   padding: const EdgeInsets.all(10),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
-                    children: const [
-                      Text(
-                        "Name:",
-                        style: TextStyle(fontSize: 25),
-                      ),
+                    children: [
                       Expanded(
-                          child: Padding(
-                              padding: EdgeInsets.all(10.0),
-                              child: Text(
-                                "{Name}",
-                                style: TextStyle(
-                                    fontSize: 30, fontWeight: FontWeight.bold),
-                              )))
+                        child: Text(
+                          widget.name,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                              fontSize: 30, fontWeight: FontWeight.bold),
+                        ),
+                      )
                     ],
                   ),
                 )),
 
             //
             const SizedBox(
-              height: 30,
+              height: 15,
             ),
 
             //Time in/out
@@ -163,9 +247,10 @@ class _TimeInOutState extends State<TimeInOut> {
               elevation: 5,
               shape: const RoundedRectangleBorder(
                   borderRadius: BorderRadius.all(Radius.circular(20))),
-              child: SizedBox(
+              child: Container(
+                margin: const EdgeInsets.all(8),
                 width: MediaQuery.of(context).size.width * 0.9,
-                height: 250,
+                height: 200,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -175,20 +260,32 @@ class _TimeInOutState extends State<TimeInOut> {
                       width: MediaQuery.of(context).size.width * 0.4,
                       height: MediaQuery.of(context).size.width * 0.4,
                       decoration: BoxDecoration(
-                          color: (timeIn == false)
-                              ? Colors.transparent
-                              : const Color(0xffFDBF05),
+                          color: (status == true)
+                              ? const Color(0xffFDBF05)
+                              : Colors.transparent,
                           border: Border.all(color: Colors.black, width: 5),
                           borderRadius:
                               const BorderRadius.all(Radius.circular(100))),
                       child: InkWell(
                         highlightColor: Colors.transparent,
                         splashFactory: NoSplash.splashFactory,
-                        onTap: () {
+                        onTap: () async {
                           print("Time in");
+                          //get the current location
+                          getCurrentLocation();
+
                           setState(() {
-                            timeIn = true;
+                            //set the status to time out
+                            status = true;
+
+                            //get the current time
+                            time = DateTime.now();
+
+                            address;
                           });
+
+                          timeInUpload(time, address);
+                          await LoginPreferences.setInOut(status!);
                         },
                         child: const Center(
                             child: Text(
@@ -209,7 +306,7 @@ class _TimeInOutState extends State<TimeInOut> {
                       width: MediaQuery.of(context).size.width * 0.4,
                       height: MediaQuery.of(context).size.width * 0.4,
                       decoration: BoxDecoration(
-                          color: (timeIn == false)
+                          color: (status != true)
                               ? const Color(0xffFDBF05)
                               : Colors.transparent,
                           border: Border.all(color: Colors.black, width: 5),
@@ -218,11 +315,22 @@ class _TimeInOutState extends State<TimeInOut> {
                       child: InkWell(
                         highlightColor: Colors.transparent,
                         splashFactory: NoSplash.splashFactory,
-                        onTap: () {
+                        onTap: () async {
                           print("Time out");
+                          //get the current location
+                          getCurrentLocation();
+
                           setState(() {
-                            timeIn = false;
+                            //set the status to time out
+                            status = false;
+
+                            //get the current time
+                            time = DateTime.now();
                           });
+
+                          //send data to firebase
+                          timeOutUpLoad();
+                          await LoginPreferences.setInOut(status!);
                         },
                         child: const Center(
                             child: Text(
@@ -237,34 +345,12 @@ class _TimeInOutState extends State<TimeInOut> {
               ),
             ),
             const SizedBox(
-              height: 30,
+              height: 15,
             ),
-            _map()
-          ],
-        ),
-      ),
-    );
-  }
 
-  Widget _map() {
-    return Container(
-      width: 500,
-      height: 400,
-      decoration: BoxDecoration(
-          border: Border.all(width: 3, color: const Color(0xffFDBF05)),
-          borderRadius: const BorderRadius.all(Radius.circular(25))),
-      child: ClipRRect(
-        borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(20),
-            topRight: Radius.circular(20),
-            bottomRight: Radius.circular(20),
-            bottomLeft: Radius.circular(20)),
-        child: GoogleMap(
-          myLocationButtonEnabled: true,
-          mapType: MapType.normal,
-          onMapCreated: _onMapCreated,
-          initialCameraPosition: CameraPosition(target: _position, zoom: 70),
-          myLocationEnabled: true,
+            //Google Map
+            GoogleMapWidget(location: location),
+          ],
         ),
       ),
     );
