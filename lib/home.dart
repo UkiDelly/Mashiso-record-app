@@ -21,7 +21,8 @@ class _Home extends State<Home> with AutomaticKeepAliveClientMixin {
   //
   PageController pageController = PageController(initialPage: 0);
   int currentIndex = 0;
-  bool timeIn = false;
+  bool status = false;
+  var address;
 
   //Google map
   late GoogleMapController mapController;
@@ -30,20 +31,11 @@ class _Home extends State<Home> with AutomaticKeepAliveClientMixin {
   //Location
   Location location = Location();
 
-  // // set the location when the map created
-  // void _onMapCreated(GoogleMapController controller) {
-  //   mapController = controller;
-
-  //   // listen for the location
-  //   location.onLocationChanged.listen((l) {
-  //     mapController.animateCamera(CameraUpdate.newCameraPosition(
-  //         CameraPosition(target: LatLng(l.latitude!, l.longitude!), zoom: 70)));
-  //   });
-  // }
-
   //Get the current location
-  getCurrentLocation() async {
+  Future<String> getCurrentLocation() async {
     final currentLocation = await location.getLocation();
+    return "LatLng: ${currentLocation.latitude} , ${currentLocation.longitude}";
+
     //TODO: send firebase the location info
   }
 
@@ -71,7 +63,7 @@ class _Home extends State<Home> with AutomaticKeepAliveClientMixin {
     });
   }
 
-  //
+  //Send Firebase
   _createData() async {
     final userCollection =
         await FirebaseFirestore.instance.collection('employee').get();
@@ -86,10 +78,18 @@ class _Home extends State<Home> with AutomaticKeepAliveClientMixin {
         duration: const Duration(milliseconds: 200), curve: Curves.ease);
   }
 
+  //get Time in/out preferences
+  timeIn() {
+    setState(() {
+      status = LoginPreferences.getInOut()!;
+    });
+  }
+
   @override
   void initState() {
     super.initState();
-    checkPermission();
+    WidgetsBinding.instance?.addPostFrameCallback((_) => checkPermission());
+    timeIn();
   }
 
   @override
@@ -215,7 +215,7 @@ class _Home extends State<Home> with AutomaticKeepAliveClientMixin {
                       width: MediaQuery.of(context).size.width * 0.4,
                       height: MediaQuery.of(context).size.width * 0.4,
                       decoration: BoxDecoration(
-                          color: (timeIn == false)
+                          color: (status == false)
                               ? Colors.transparent
                               : const Color(0xffFDBF05),
                           border: Border.all(color: Colors.black, width: 5),
@@ -224,11 +224,14 @@ class _Home extends State<Home> with AutomaticKeepAliveClientMixin {
                       child: InkWell(
                         highlightColor: Colors.transparent,
                         splashFactory: NoSplash.splashFactory,
-                        onTap: () {
+                        onTap: () async {
                           print("Time in");
                           setState(() {
-                            timeIn = true;
+                            status = true;
+                            getCurrentLocation()
+                                .then((value) => address = value);
                           });
+                          await LoginPreferences.setInOut(status);
                         },
                         child: const Center(
                             child: Text(
@@ -249,7 +252,7 @@ class _Home extends State<Home> with AutomaticKeepAliveClientMixin {
                       width: MediaQuery.of(context).size.width * 0.4,
                       height: MediaQuery.of(context).size.width * 0.4,
                       decoration: BoxDecoration(
-                          color: (timeIn == false)
+                          color: (status == false)
                               ? const Color(0xffFDBF05)
                               : Colors.transparent,
                           border: Border.all(color: Colors.black, width: 5),
@@ -261,10 +264,12 @@ class _Home extends State<Home> with AutomaticKeepAliveClientMixin {
                         onTap: () async {
                           print("Time out");
                           setState(() {
-                            timeIn = false;
+                            status = false;
+                            getCurrentLocation()
+                                .then((value) => address = value);
                           });
-                          var _address = await getCurrentLocation();
-                          print(_address);
+
+                          await LoginPreferences.setInOut(status);
                         },
                         child: const Center(
                             child: Text(
@@ -286,35 +291,15 @@ class _Home extends State<Home> with AutomaticKeepAliveClientMixin {
             GoogleMapWidget(location: location),
 
             // test
+            Card(
+                child: Center(
+              child: Text("$address"),
+            ))
           ],
         ),
       ),
     );
   }
-
-//   Widget _googleMap() {
-//     return Container(
-//       width: 500,
-//       height: 400,
-//       decoration: BoxDecoration(
-//           border: Border.all(width: 3, color: const Color(0xffFDBF05)),
-//           borderRadius: const BorderRadius.all(Radius.circular(25))),
-//       child: ClipRRect(
-//         borderRadius: const BorderRadius.only(
-//             topLeft: Radius.circular(20),
-//             topRight: Radius.circular(20),
-//             bottomRight: Radius.circular(20),
-//             bottomLeft: Radius.circular(20)),
-//         child: GoogleMap(
-//           myLocationButtonEnabled: true,
-//           mapType: MapType.normal,
-//           onMapCreated: _onMapCreated,
-//           initialCameraPosition: CameraPosition(target: _position, zoom: 70),
-//           myLocationEnabled: true,
-//         ),
-//       ),
-//     );
-//   }
 }
 
 //Remove Glow

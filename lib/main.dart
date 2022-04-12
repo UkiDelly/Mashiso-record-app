@@ -57,13 +57,16 @@ class _MyAppState extends State<MyApp> {
             FutureBuilder(
           future: login,
           builder: (context, user) {
-            Map<String, dynamic> data = {"name": "NULL"};
-            if (!user.hasData) {
-              const Login();
-            } else {
-              data = user.data! as Map<String, dynamic>;
+            if (user.hasData) {
+              Map<String, dynamic> data = user.data! as Map<String, dynamic>;
+              return Home(name: data['name']);
+            } else if (user.connectionState == ConnectionState.waiting) {
+              return Container(
+                color: Colors.white,
+                child: const Center(child: CircularProgressIndicator()),
+              );
             }
-            return Home(name: data['name']);
+            return const Login();
           },
         ));
   }
