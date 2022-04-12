@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:page_transition/page_transition.dart';
-import 'package:work_record_app/time_in_out.dart';
+import 'package:work_record_app/home.dart';
+import 'package:work_record_app/preferences.dart';
 
 Color mainColor = const Color(0xffFDBF05);
 
@@ -30,7 +31,8 @@ class __LoginState extends State<_Login> {
   final formGlobalKey = GlobalKey<FormState>();
   dynamic exist = 'null';
   bool showPassword = false;
-  String username = "", password = "";
+  String username = "", password = "", name = "";
+  String userId = "";
   //login function
   login() async {
     final employee = await FirebaseFirestore.instance
@@ -43,12 +45,15 @@ class __LoginState extends State<_Login> {
     if (employee.size == 0) {
       exist = false;
     } else {
+      userId = employee.docs.first.id;
+      name = employee.docs.first.data()['name'];
       username = employee.docs.first.data()['username'];
       password = employee.docs.first.data()['password'];
       exist = employee.docs.first.exists;
     }
     setState(() {
       exist;
+      name;
       username;
       password;
     });
@@ -61,7 +66,6 @@ class __LoginState extends State<_Login> {
 
   @override
   Widget build(BuildContext context) {
-    print(username + password);
     return Form(
       key: formGlobalKey,
       child: Column(
@@ -153,13 +157,16 @@ class __LoginState extends State<_Login> {
             height: 50,
             child: ElevatedButton(
               onPressed: () async {
-                await login();
+                login();
 
                 if (exist) {
+                  await LoginPreferences.saveUserId(userId);
                   Navigator.pushReplacement(
                       context,
                       PageTransition(
-                          child: const TimeInOut(),
+                          child: Home(
+                            name: name,
+                          ),
                           type: PageTransitionType.fade));
                 } else {
                   setState(() {

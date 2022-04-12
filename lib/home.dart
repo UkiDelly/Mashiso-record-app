@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:location/location.dart';
@@ -5,15 +7,18 @@ import 'package:page_transition/page_transition.dart';
 import 'package:work_record_app/Record.dart';
 import 'package:work_record_app/login.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:http/http.dart' as http;
 
-class TimeInOut extends StatefulWidget {
-  const TimeInOut({Key? key}) : super(key: key);
+// ignore: must_be_immutable
+class Home extends StatefulWidget {
+  String name;
+  Home({Key? key, required this.name}) : super(key: key);
 
   @override
-  State<TimeInOut> createState() => _TimeInOutState();
+  State<Home> createState() => _Home();
 }
 
-class _TimeInOutState extends State<TimeInOut> {
+class _Home extends State<Home> {
   //
   PageController pageController = PageController(initialPage: 0);
   int currentIndex = 0;
@@ -22,6 +27,9 @@ class _TimeInOutState extends State<TimeInOut> {
   //Google map
   late GoogleMapController mapController;
   final LatLng _position = const LatLng(10.682024, 122.954228);
+
+  //Location
+  Location location = Location();
 
   // set the location when the map created
   void _onMapCreated(GoogleMapController controller) {
@@ -34,8 +42,36 @@ class _TimeInOutState extends State<TimeInOut> {
     });
   }
 
-  //Get Location
-  Location location = Location();
+  //Get the current location
+  getCurrentLocation() async {
+    final currentLocation = await location.getLocation();
+    //TODO: send firebase the location info
+  }
+
+  //Service and permission
+  late bool _serviceEnabled;
+  late PermissionStatus _permissionGranted;
+
+  //check the permission
+  checkPermission() async {
+    //check the service in enabled
+    _serviceEnabled = await location.serviceEnabled();
+    if (!_serviceEnabled) {
+      _serviceEnabled = await location.requestService();
+    }
+
+    //check the permission is enabled
+    _permissionGranted = await location.hasPermission();
+    if (_permissionGranted == PermissionStatus.denied) {
+      _permissionGranted = await location.requestPermission();
+    }
+
+    setState(() {
+      _serviceEnabled;
+      _permissionGranted;
+    });
+  }
+
   //
   _createData() async {
     final userCollection =
@@ -59,6 +95,8 @@ class _TimeInOutState extends State<TimeInOut> {
   @override
   void initState() {
     super.initState();
+    location.enableBackgroundMode(enable: true);
+    checkPermission();
   }
 
   @override
@@ -67,6 +105,8 @@ class _TimeInOutState extends State<TimeInOut> {
       body: ScrollConfiguration(
         behavior: MyBehavior(),
         child: PageView(
+          scrollDirection: Axis.horizontal,
+          physics: const NeverScrollableScrollPhysics(),
           controller: pageController,
           children: [_home(), const Record()],
         ),
@@ -78,6 +118,7 @@ class _TimeInOutState extends State<TimeInOut> {
         currentIndex: currentIndex,
         onTap: (index) {
           if (index == 2) {
+            //Logout if the logout button is pressed
             Navigator.pushReplacement(
                 context,
                 PageTransition(
@@ -106,6 +147,7 @@ class _TimeInOutState extends State<TimeInOut> {
     );
   }
 
+  // Home screen
   Widget _home() {
     return SingleChildScrollView(
       child: Center(
@@ -136,17 +178,17 @@ class _TimeInOutState extends State<TimeInOut> {
                   padding: const EdgeInsets.all(10),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
-                    children: const [
-                      Text(
+                    children: [
+                      const Text(
                         "Name:",
                         style: TextStyle(fontSize: 25),
                       ),
                       Expanded(
                           child: Padding(
-                              padding: EdgeInsets.all(10.0),
+                              padding: const EdgeInsets.all(10.0),
                               child: Text(
-                                "{Name}",
-                                style: TextStyle(
+                                widget.name,
+                                style: const TextStyle(
                                     fontSize: 30, fontWeight: FontWeight.bold),
                               )))
                     ],
@@ -218,11 +260,13 @@ class _TimeInOutState extends State<TimeInOut> {
                       child: InkWell(
                         highlightColor: Colors.transparent,
                         splashFactory: NoSplash.splashFactory,
-                        onTap: () {
+                        onTap: () async {
                           print("Time out");
                           setState(() {
                             timeIn = false;
                           });
+                          var _address = await getCurrentLocation();
+                          print(_address);
                         },
                         child: const Center(
                             child: Text(
@@ -239,14 +283,26 @@ class _TimeInOutState extends State<TimeInOut> {
             const SizedBox(
               height: 30,
             ),
-            _map()
+
+            //Google Map
+            _googleMap(),
+
+            // test
+            Card(
+              elevation: 5,
+              child: SizedBox(
+                width: 200,
+                height: 200,
+                child: Center(child: Text("")),
+              ),
+            )
           ],
         ),
       ),
     );
   }
 
-  Widget _map() {
+  Widget _googleMap() {
     return Container(
       width: 500,
       height: 400,
