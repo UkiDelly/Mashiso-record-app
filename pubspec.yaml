@@ -38,6 +38,8 @@ dependencies:
   http:
   shared_preferences: 
   intl:
+  fluttertoast:
+
 
 
   # The following adds the Cupertino Icons font to your application.

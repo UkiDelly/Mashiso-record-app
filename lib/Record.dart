@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class Record extends StatefulWidget {
   const Record({Key? key}) : super(key: key);
@@ -28,8 +29,6 @@ class _RecordState extends State<Record> {
     if (mounted) {
       setState(() {
         data;
-        // point = data[0]['location'];
-        // time = DateTime.fromMicrosecondsSinceEpoch(data[0]['time'] * 1000);
       });
     }
   }
@@ -131,6 +130,7 @@ class _RecordState extends State<Record> {
         margin: const EdgeInsets.all(10),
         width: MediaQuery.of(context).size.width * 0.9,
         child: Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
+          const Spacer(),
           convertDate(time),
           const Spacer(),
           Container(
@@ -149,5 +149,11 @@ class _RecordState extends State<Record> {
         ]),
       ),
     );
+  }
+
+  Widget recordMap(GeoPoint location) {
+    return GoogleMap(
+        initialCameraPosition: CameraPosition(
+            target: LatLng(location.latitude, location.longitude)));
   }
 }

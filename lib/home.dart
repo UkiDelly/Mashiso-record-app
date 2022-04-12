@@ -1,5 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:location/location.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:work_record_app/Record.dart';
@@ -25,29 +26,27 @@ class _Home extends State<Home> with AutomaticKeepAliveClientMixin {
   var address;
   DateTime time = DateTime.now();
 
-  //Google map
+  //*Google map
   late GoogleMapController mapController;
   final LatLng _position = const LatLng(10.682024, 122.954228);
 
-  //Location
+  //*Location
   Location location = Location();
 
-  //Get the current location
+  //*Get the current location
   getCurrentLocation() {
     location.onLocationChanged.listen((location) {
       setState(() {
-        address = "LatLng: ${location.latitude} , ${location.longitude}";
+        address = location;
       });
     });
-
-    //TODO: send firebase the location info
   }
 
-  //Service and permission
+  //*Service and permission
   late bool _serviceEnabled;
   late PermissionStatus _permissionGranted;
 
-  //check the permission
+  //*check the permission
   checkPermission() async {
     //check the service in enabled
     _serviceEnabled = await location.serviceEnabled();
@@ -55,7 +54,7 @@ class _Home extends State<Home> with AutomaticKeepAliveClientMixin {
       _serviceEnabled = await location.requestService();
     }
 
-    //check the permission is enabled
+    //*check the permission is enabled
     _permissionGranted = await location.hasPermission();
     if (_permissionGranted == PermissionStatus.denied) {
       _permissionGranted = await location.requestPermission();
@@ -67,13 +66,7 @@ class _Home extends State<Home> with AutomaticKeepAliveClientMixin {
     });
   }
 
-  //Send Firebase
-  _createData() async {
-    final userCollection =
-        await FirebaseFirestore.instance.collection('employee').get();
-  }
-
-  //Change the page
+  //*Change the page
   _changePage(int index) {
     setState(() {
       currentIndex = index;
@@ -82,11 +75,56 @@ class _Home extends State<Home> with AutomaticKeepAliveClientMixin {
         duration: const Duration(milliseconds: 200), curve: Curves.ease);
   }
 
-  //get Time in/out preferences
+  //*get Time in/out preferences
   timeIn() {
     setState(() {
       status = LoginPreferences.getInOut();
     });
+  }
+
+  //*Send Firebase
+  timeInUpload(var time, var address) async {
+    var _userId = LoginPreferences.getUserId();
+    final _employee = await FirebaseFirestore.instance
+        .collection('employee')
+        .doc(_userId)
+        .collection('record')
+        .add({
+      'status': "time in",
+      'time': Timestamp.fromDate(time),
+      'location': GeoPoint(address.latitude, address.longitude)
+    });
+
+    Fluttertoast.showToast(
+        msg: "Successfully Time in!",
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.TOP,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.grey,
+        textColor: Colors.white,
+        fontSize: 20.0);
+  }
+
+  timeOutUpLoad() async {
+    var _userId = LoginPreferences.getUserId();
+    final _employee = await FirebaseFirestore.instance
+        .collection('employee')
+        .doc(_userId)
+        .collection('record')
+        .add({
+      'status': "time out",
+      'time': Timestamp.fromDate(time),
+      'location': GeoPoint(address.latitude, address.longitude)
+    });
+
+    Fluttertoast.showToast(
+        msg: "Successfully Time Out!",
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.TOP,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.grey,
+        textColor: Colors.white,
+        fontSize: 20.0);
   }
 
   @override
@@ -98,6 +136,7 @@ class _Home extends State<Home> with AutomaticKeepAliveClientMixin {
     //bring the last state of the time in/out
     timeIn();
 
+    //get the current location
     address = "Not press yet";
     getCurrentLocation();
   }
@@ -248,6 +287,8 @@ class _Home extends State<Home> with AutomaticKeepAliveClientMixin {
 
                             address;
                           });
+
+                          timeInUpload(time, address);
                           await LoginPreferences.setInOut(status!);
                         },
                         child: const Center(
@@ -291,6 +332,8 @@ class _Home extends State<Home> with AutomaticKeepAliveClientMixin {
                             time = DateTime.now();
                           });
 
+                          //send data to firebase
+                          timeOutUpLoad();
                           await LoginPreferences.setInOut(status!);
                         },
                         child: const Center(
