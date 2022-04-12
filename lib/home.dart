@@ -241,9 +241,10 @@ class _Home extends State<Home> with AutomaticKeepAliveClientMixin {
               elevation: 5,
               shape: const RoundedRectangleBorder(
                   borderRadius: BorderRadius.all(Radius.circular(20))),
-              child: SizedBox(
+              child: Container(
+                margin: const EdgeInsets.all(8),
                 width: MediaQuery.of(context).size.width * 0.9,
-                height: 250,
+                height: 200,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   crossAxisAlignment: CrossAxisAlignment.center,
