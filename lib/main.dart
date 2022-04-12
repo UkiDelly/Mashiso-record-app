@@ -81,9 +81,7 @@ class _MyAppState extends State<MyApp> {
             primarySwatch: Colors.orange,
             brightness: Brightness.dark),
         themeMode: ThemeMode.system,
-        home:
-            // const TimeInOut());
-            FutureBuilder(
+        home: FutureBuilder(
           future: login,
           builder: (context, user) {
             if (user.hasData) {
