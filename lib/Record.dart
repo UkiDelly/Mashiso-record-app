@@ -9,7 +9,9 @@ class Record extends StatefulWidget {
 }
 
 class _RecordState extends State<Record> {
-  late List data = [];
+  List data = [];
+  GeoPoint point = const GeoPoint(0, 0);
+  late DateTime time = DateTime.now();
   //test
   test() async {
     final employee = await FirebaseFirestore.instance
@@ -25,6 +27,8 @@ class _RecordState extends State<Record> {
     if (mounted) {
       setState(() {
         data;
+        point = data[0]['location'];
+        time = DateTime.fromMicrosecondsSinceEpoch(data[0]['time'] * 1000);
       });
     }
   }
@@ -40,7 +44,29 @@ class _RecordState extends State<Record> {
     return Scaffold(
         body: Center(
             child: SizedBox(
-      child: Text("$data"),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text("${data[0]}"),
+          const SizedBox(
+            height: 30,
+          ),
+          Text("${point.latitude}, ${point.longitude}"),
+          const SizedBox(
+            height: 30,
+          ),
+          Text(
+              "${time.year}-${time.month}-${time.day} 오후 ${time.hour - 12}:${time.minute}"),
+          const SizedBox(
+            height: 30,
+          ),
+          recordCard()
+        ],
+      ),
     )));
+  }
+
+  Widget recordCard() {
+    return const Card();
   }
 }

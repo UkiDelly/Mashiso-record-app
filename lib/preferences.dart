@@ -10,8 +10,9 @@ class LoginPreferences {
   static const _keyTimeInOut = "";
 
   //create an instance
-  static Future init() async =>
-      _preferences = await SharedPreferences.getInstance();
+  static Future init() async {
+    _preferences = await SharedPreferences.getInstance();
+  }
 
   //set to user id
   static Future saveUserId(String userId) async =>

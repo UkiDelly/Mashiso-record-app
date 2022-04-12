@@ -21,8 +21,9 @@ class _Home extends State<Home> with AutomaticKeepAliveClientMixin {
   //
   PageController pageController = PageController(initialPage: 0);
   int currentIndex = 0;
-  bool status = false;
+  late bool? status;
   var address;
+  DateTime time = DateTime.now();
 
   //Google map
   late GoogleMapController mapController;
@@ -32,9 +33,14 @@ class _Home extends State<Home> with AutomaticKeepAliveClientMixin {
   Location location = Location();
 
   //Get the current location
-  Future<String> getCurrentLocation() async {
-    final currentLocation = await location.getLocation();
-    return "LatLng: ${currentLocation.latitude} , ${currentLocation.longitude}";
+  getCurrentLocation() {
+    location.onLocationChanged.listen((location) {
+      setState(() {
+        address = "LatLng: ${location.latitude} , ${location.longitude}";
+      });
+    });
+    // final currentLocation = await location.getLocation();
+    // return "LatLng: ${currentLocation.latitude} , ${currentLocation.longitude}";
 
     //TODO: send firebase the location info
   }
@@ -81,15 +87,21 @@ class _Home extends State<Home> with AutomaticKeepAliveClientMixin {
   //get Time in/out preferences
   timeIn() {
     setState(() {
-      status = LoginPreferences.getInOut()!;
+      status = LoginPreferences.getInOut();
     });
   }
 
   @override
   void initState() {
     super.initState();
+    // check permission
     WidgetsBinding.instance?.addPostFrameCallback((_) => checkPermission());
+
+    //bring the last state of the time in/out
     timeIn();
+
+    address = "Not press yet";
+    getCurrentLocation();
   }
 
   @override
@@ -226,12 +238,19 @@ class _Home extends State<Home> with AutomaticKeepAliveClientMixin {
                         splashFactory: NoSplash.splashFactory,
                         onTap: () async {
                           print("Time in");
+                          //get the current location
+                          getCurrentLocation();
+
                           setState(() {
+                            //set the status to time out
                             status = true;
-                            getCurrentLocation()
-                                .then((value) => address = value);
+
+                            //get the current time
+                            time = DateTime.now();
+
+                            address;
                           });
-                          await LoginPreferences.setInOut(status);
+                          await LoginPreferences.setInOut(status!);
                         },
                         child: const Center(
                             child: Text(
@@ -263,13 +282,18 @@ class _Home extends State<Home> with AutomaticKeepAliveClientMixin {
                         splashFactory: NoSplash.splashFactory,
                         onTap: () async {
                           print("Time out");
+                          //get the current location
+                          getCurrentLocation();
+
                           setState(() {
+                            //set the status to time out
                             status = false;
-                            getCurrentLocation()
-                                .then((value) => address = value);
+
+                            //get the current time
+                            time = DateTime.now();
                           });
 
-                          await LoginPreferences.setInOut(status);
+                          await LoginPreferences.setInOut(status!);
                         },
                         child: const Center(
                             child: Text(
@@ -293,7 +317,8 @@ class _Home extends State<Home> with AutomaticKeepAliveClientMixin {
             // test
             Card(
                 child: Center(
-              child: Text("$address"),
+              child: Text(
+                  "$address\n                             ${time.hour.toString()} : ${time.minute.toString()}"),
             ))
           ],
         ),
