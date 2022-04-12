@@ -1,5 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class Record extends StatefulWidget {
   const Record({Key? key}) : super(key: key);
@@ -9,23 +9,38 @@ class Record extends StatefulWidget {
 }
 
 class _RecordState extends State<Record> {
-  //Google map
-  late GoogleMapController mapController;
-  final LatLng _center = const LatLng(45.521563, -122.677433);
+  late List data = [];
+  //test
+  test() async {
+    final employee = await FirebaseFirestore.instance
+        .collection('employee')
+        .doc('vuUn9uuoTxFLyJ3zd4Fu')
+        .collection('record')
+        .get();
 
-  void _onMapCreated(GoogleMapController controller) {
-    setState(() {
-      mapController = controller;
-    });
+    for (int i = 0; i < employee.docs.length; i++) {
+      data.add(employee.docs[i].data());
+    }
+
+    if (mounted) {
+      setState(() {
+        data;
+      });
+    }
   }
 
   @override
   void initState() {
     super.initState();
+    test();
   }
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(body: SizedBox());
+    return Scaffold(
+        body: Center(
+            child: SizedBox(
+      child: Text("$data"),
+    )));
   }
 }

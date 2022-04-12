@@ -157,7 +157,7 @@ class __LoginState extends State<_Login> {
             height: 50,
             child: ElevatedButton(
               onPressed: () async {
-                login();
+                await login();
 
                 if (exist) {
                   await LoginPreferences.saveUserId(userId);

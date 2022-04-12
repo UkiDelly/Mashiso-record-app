@@ -1,9 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:work_record_app/home.dart';
 import 'package:work_record_app/preferences.dart';
 
 import 'login.dart';
-import 'home.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,9 +22,23 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  String? userId = 'empty_user_id';
+  var login;
 
-  
+  autoLogin() async {
+    final employee = await FirebaseFirestore.instance
+        .collection('employee')
+        .doc(userId)
+        .get();
+    return employee.data();
+  }
 
+  @override
+  void initState() {
+    super.initState();
+    userId = LoginPreferences.getUserId();
+    login = autoLogin();
+  }
 
   // This widget is the root of your application.
   @override
@@ -39,6 +54,17 @@ class _MyAppState extends State<MyApp> {
         themeMode: ThemeMode.system,
         home:
             // const TimeInOut());
-            const Login());
+            FutureBuilder(
+          future: login,
+          builder: (context, user) {
+            Map<String, dynamic> data = {"name": "NULL"};
+            if (!user.hasData) {
+              const Login();
+            } else {
+              data = user.data! as Map<String, dynamic>;
+            }
+            return Home(name: data['name']);
+          },
+        ));
   }
 }

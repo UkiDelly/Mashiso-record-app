@@ -4,7 +4,7 @@ class LoginPreferences {
   static SharedPreferences _preferences = _preferences;
 
   //key for the user id
-  static const _keyUserId = "";
+  static const _keyUserId = "empty_user_id";
 
   //create an instance
   static Future init() async =>
@@ -15,5 +15,5 @@ class LoginPreferences {
       await _preferences.setString(_keyUserId, userId);
 
   //get the user id
-  static String getUserId() => _preferences.getString(_keyUserId)!;
+  static String? getUserId() => _preferences.getString(_keyUserId);
 }

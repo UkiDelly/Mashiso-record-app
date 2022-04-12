@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:location/location.dart';
@@ -7,7 +5,7 @@ import 'package:page_transition/page_transition.dart';
 import 'package:work_record_app/Record.dart';
 import 'package:work_record_app/login.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:http/http.dart' as http;
+import 'package:work_record_app/preferences.dart';
 
 // ignore: must_be_immutable
 class Home extends StatefulWidget {
@@ -95,7 +93,6 @@ class _Home extends State<Home> {
   @override
   void initState() {
     super.initState();
-    location.enableBackgroundMode(enable: true);
     checkPermission();
   }
 
@@ -116,9 +113,10 @@ class _Home extends State<Home> {
       bottomNavigationBar: BottomNavigationBar(
         elevation: 10,
         currentIndex: currentIndex,
-        onTap: (index) {
+        onTap: (index) async {
           if (index == 2) {
             //Logout if the logout button is pressed
+            await LoginPreferences.saveUserId("empty_user_id");
             Navigator.pushReplacement(
                 context,
                 PageTransition(
@@ -288,14 +286,6 @@ class _Home extends State<Home> {
             _googleMap(),
 
             // test
-            Card(
-              elevation: 5,
-              child: SizedBox(
-                width: 200,
-                height: 200,
-                child: Center(child: Text("")),
-              ),
-            )
           ],
         ),
       ),
