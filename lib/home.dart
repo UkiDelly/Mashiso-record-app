@@ -11,8 +11,10 @@ import 'package:work_record_app/preferences.dart';
 
 // ignore: must_be_immutable
 class Home extends StatefulWidget {
+  Location location;
   String name;
-  Home({Key? key, required this.name}) : super(key: key);
+  Home({Key? key, required this.name, required this.location})
+      : super(key: key);
 
   @override
   State<Home> createState() => _Home();
@@ -42,29 +44,29 @@ class _Home extends State<Home> with AutomaticKeepAliveClientMixin {
     });
   }
 
-  //*Service and permission
-  late bool _serviceEnabled;
-  late PermissionStatus _permissionGranted;
+  // //*Service and permission
+  // late bool _serviceEnabled;
+  // late PermissionStatus _permissionGranted;
 
-  //*check the permission
-  checkPermission() async {
-    //check the service in enabled
-    _serviceEnabled = await location.serviceEnabled();
-    if (!_serviceEnabled) {
-      _serviceEnabled = await location.requestService();
-    }
+  // //*check the permission
+  // checkPermission() async {
+  //   //check the service in enabled
+  //   _serviceEnabled = await location.serviceEnabled();
+  //   if (!_serviceEnabled) {
+  //     _serviceEnabled = await location.requestService();
+  //   }
 
-    //*check the permission is enabled
-    _permissionGranted = await location.hasPermission();
-    if (_permissionGranted == PermissionStatus.denied) {
-      _permissionGranted = await location.requestPermission();
-    }
+  //   //*check the permission is enabled
+  //   _permissionGranted = await location.hasPermission();
+  //   if (_permissionGranted == PermissionStatus.denied) {
+  //     _permissionGranted = await location.requestPermission();
+  //   }
 
-    setState(() {
-      _serviceEnabled;
-      _permissionGranted;
-    });
-  }
+  //   setState(() {
+  //     _serviceEnabled;
+  //     _permissionGranted;
+  //   });
+  // }
 
   //*Change the page
   _changePage(int index) {
@@ -124,7 +126,8 @@ class _Home extends State<Home> with AutomaticKeepAliveClientMixin {
   void initState() {
     super.initState();
     // check permission
-    WidgetsBinding.instance?.addPostFrameCallback((_) => checkPermission());
+    // WidgetsBinding.instance?.addPostFrameCallback((_) => checkPermission());
+    location = widget.location;
 
     //bring the last state of the time in/out
     status = LoginPreferences.getInOut();
@@ -162,7 +165,10 @@ class _Home extends State<Home> with AutomaticKeepAliveClientMixin {
             Navigator.pushReplacement(
                 context,
                 PageTransition(
-                    child: const Login(), type: PageTransitionType.fade));
+                    child: Login(
+                      location: widget.location,
+                    ),
+                    type: PageTransitionType.fade));
           }
           _changePage(index);
         },

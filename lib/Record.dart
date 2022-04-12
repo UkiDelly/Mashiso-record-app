@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
+import 'package:work_record_app/preferences.dart';
 
 class Record extends StatefulWidget {
   const Record({Key? key}) : super(key: key);
@@ -14,12 +15,13 @@ class _RecordState extends State<Record> {
   List data = [];
   GeoPoint point = const GeoPoint(0, 0);
   late DateTime time = DateTime.now();
+  var userId = LoginPreferences.getUserId();
 
   //test
   getRecord() async {
     final employee = await FirebaseFirestore.instance
         .collection('employee')
-        .doc('vuUn9uuoTxFLyJ3zd4Fu')
+        .doc(userId)
         .collection('record')
         .orderBy('time', descending: true)
         .get();

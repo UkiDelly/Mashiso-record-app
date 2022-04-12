@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:location/location.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:work_record_app/home.dart';
 import 'package:work_record_app/preferences.dart';
@@ -7,18 +8,23 @@ import 'package:work_record_app/preferences.dart';
 Color mainColor = const Color(0xffFDBF05);
 
 class Login extends StatelessWidget {
-  const Login({Key? key}) : super(key: key);
+  Location location;
+  Login({Key? key, required this.location}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(child: _Login()),
+    return Scaffold(
+      body: Center(
+          child: _Login(
+        location: location,
+      )),
     );
   }
 }
 
 class _Login extends StatefulWidget {
-  const _Login({Key? key}) : super(key: key);
+  Location location;
+  _Login({Key? key, required this.location}) : super(key: key);
 
   @override
   State<_Login> createState() => __LoginState();
@@ -58,8 +64,6 @@ class __LoginState extends State<_Login> {
       password;
     });
   }
-
-  
 
   @override
   void initState() {
@@ -168,6 +172,7 @@ class __LoginState extends State<_Login> {
                       PageTransition(
                           child: Home(
                             name: name,
+                            location: widget.location,
                           ),
                           type: PageTransitionType.fade));
                 } else {

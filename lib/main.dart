@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:location/location.dart';
 import 'package:work_record_app/home.dart';
 import 'package:work_record_app/preferences.dart';
 
@@ -33,11 +34,36 @@ class _MyAppState extends State<MyApp> {
     return employee.data();
   }
 
+//*Service and permission
+  late bool _serviceEnabled;
+  late PermissionStatus _permissionGranted;
+  Location location = Location();
+  //*check the permission
+  checkPermission() async {
+    //check the service in enabled
+    _serviceEnabled = await location.serviceEnabled();
+    if (!_serviceEnabled) {
+      _serviceEnabled = await location.requestService();
+    }
+
+    //*check the permission is enabled
+    _permissionGranted = await location.hasPermission();
+    if (_permissionGranted == PermissionStatus.denied) {
+      _permissionGranted = await location.requestPermission();
+    }
+
+    setState(() {
+      _serviceEnabled;
+      _permissionGranted;
+    });
+  }
+
   @override
   void initState() {
     super.initState();
     userId = LoginPreferences.getUserId();
     login = autoLogin();
+    checkPermission();
   }
 
   // This widget is the root of your application.
@@ -50,8 +76,10 @@ class _MyAppState extends State<MyApp> {
             fontFamily: 'Inter',
             primarySwatch: Colors.orange,
             brightness: Brightness.light),
-        darkTheme: ThemeData(fontFamily: 'Inter',
-            primarySwatch: Colors.orange, brightness: Brightness.dark),
+        darkTheme: ThemeData(
+            fontFamily: 'Inter',
+            primarySwatch: Colors.orange,
+            brightness: Brightness.dark),
         themeMode: ThemeMode.system,
         home:
             // const TimeInOut());
@@ -60,14 +88,19 @@ class _MyAppState extends State<MyApp> {
           builder: (context, user) {
             if (user.hasData) {
               Map<String, dynamic> data = user.data! as Map<String, dynamic>;
-              return Home(name: data['name']);
+              return Home(
+                name: data['name'],
+                location: location,
+              );
             } else if (user.connectionState == ConnectionState.waiting) {
               return Container(
                 color: Colors.white,
                 child: const Center(child: CircularProgressIndicator()),
               );
             }
-            return const Login();
+            return Login(
+              location: location,
+            );
           },
         ));
   }
