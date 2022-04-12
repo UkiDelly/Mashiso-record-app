@@ -50,7 +50,8 @@ class _MyAppState extends State<MyApp> {
             fontFamily: 'Inter',
             primarySwatch: Colors.orange,
             brightness: Brightness.light),
-        darkTheme: ThemeData(fontFamily: 'Inter', brightness: Brightness.dark),
+        darkTheme: ThemeData(fontFamily: 'Inter',
+            primarySwatch: Colors.orange, brightness: Brightness.dark),
         themeMode: ThemeMode.system,
         home:
             // const TimeInOut());

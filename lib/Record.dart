@@ -20,6 +20,7 @@ class _RecordState extends State<Record> {
         .collection('employee')
         .doc('vuUn9uuoTxFLyJ3zd4Fu')
         .collection('record')
+        .orderBy('time', descending: true)
         .get();
 
     for (int i = 0; i < employee.docs.length; i++) {
@@ -89,13 +90,13 @@ class _RecordState extends State<Record> {
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
         Text(
-          "$_month $_day, $_year",
-          style: const TextStyle(fontSize: 23, fontWeight: FontWeight.bold),
+          _time,
+          style: const TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
         ),
         Text(
-          _time,
+          "$_month $_day, $_year",
           style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
-        )
+        ),
       ],
     );
   }
@@ -109,15 +110,13 @@ class _RecordState extends State<Record> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: SingleChildScrollView(
-      child: ListView.builder(
-        shrinkWrap: true,
-        itemCount: data.length,
-        itemBuilder: (context, index) {
-          var _time = data[index]['time'].toDate();
-          return recordCard(_time, index);
-        },
-      ),
+        body: ListView.builder(
+      shrinkWrap: true,
+      itemCount: data.length,
+      itemBuilder: (context, index) {
+        var _time = data[index]['time'].toDate();
+        return recordCard(_time, index);
+      },
     ));
   }
 
@@ -127,17 +126,23 @@ class _RecordState extends State<Record> {
       shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(20))),
       child: Container(
-        margin: const EdgeInsets.all(10),
+        margin: const EdgeInsets.fromLTRB(
+          15,
+          10,
+          5,
+          10,
+        ),
         width: MediaQuery.of(context).size.width * 0.9,
         child: Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
-          const Spacer(),
           convertDate(time),
           const Spacer(),
           Container(
             width: 150,
             height: 150,
             decoration: BoxDecoration(
-                color: const Color(0xffFDBF05),
+                color: data[index]['status'] == 'time in'
+                    ? const Color(0xffFDBF05)
+                    : Colors.transparent,
                 border: Border.all(color: Colors.black, width: 5),
                 borderRadius: const BorderRadius.all(Radius.circular(100))),
             child: Center(

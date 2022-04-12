@@ -75,13 +75,6 @@ class _Home extends State<Home> with AutomaticKeepAliveClientMixin {
         duration: const Duration(milliseconds: 200), curve: Curves.ease);
   }
 
-  //*get Time in/out preferences
-  timeIn() {
-    setState(() {
-      status = LoginPreferences.getInOut();
-    });
-  }
-
   //*Send Firebase
   timeInUpload(var time, var address) async {
     var _userId = LoginPreferences.getUserId();
@@ -134,7 +127,7 @@ class _Home extends State<Home> with AutomaticKeepAliveClientMixin {
     WidgetsBinding.instance?.addPostFrameCallback((_) => checkPermission());
 
     //bring the last state of the time in/out
-    timeIn();
+    status = LoginPreferences.getInOut();
 
     //get the current location
     address = "Not press yet";
@@ -226,25 +219,21 @@ class _Home extends State<Home> with AutomaticKeepAliveClientMixin {
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      const Text(
-                        "Name:",
-                        style: TextStyle(fontSize: 25),
-                      ),
                       Expanded(
-                          child: Padding(
-                              padding: const EdgeInsets.all(10.0),
-                              child: Text(
-                                widget.name,
-                                style: const TextStyle(
-                                    fontSize: 30, fontWeight: FontWeight.bold),
-                              )))
+                        child: Text(
+                          widget.name,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                              fontSize: 30, fontWeight: FontWeight.bold),
+                        ),
+                      )
                     ],
                   ),
                 )),
 
             //
             const SizedBox(
-              height: 30,
+              height: 15,
             ),
 
             //Time in/out
@@ -264,9 +253,9 @@ class _Home extends State<Home> with AutomaticKeepAliveClientMixin {
                       width: MediaQuery.of(context).size.width * 0.4,
                       height: MediaQuery.of(context).size.width * 0.4,
                       decoration: BoxDecoration(
-                          color: (status == false)
-                              ? Colors.transparent
-                              : const Color(0xffFDBF05),
+                          color: (status == true)
+                              ? const Color(0xffFDBF05)
+                              : Colors.transparent,
                           border: Border.all(color: Colors.black, width: 5),
                           borderRadius:
                               const BorderRadius.all(Radius.circular(100))),
@@ -310,7 +299,7 @@ class _Home extends State<Home> with AutomaticKeepAliveClientMixin {
                       width: MediaQuery.of(context).size.width * 0.4,
                       height: MediaQuery.of(context).size.width * 0.4,
                       decoration: BoxDecoration(
-                          color: (status == false)
+                          color: (status != true)
                               ? const Color(0xffFDBF05)
                               : Colors.transparent,
                           border: Border.all(color: Colors.black, width: 5),
@@ -349,18 +338,11 @@ class _Home extends State<Home> with AutomaticKeepAliveClientMixin {
               ),
             ),
             const SizedBox(
-              height: 30,
+              height: 15,
             ),
 
             //Google Map
             GoogleMapWidget(location: location),
-
-            // test
-            Card(
-                child: Center(
-              child: Text(
-                  "$address\n                             ${time.hour.toString()} : ${time.minute.toString()}"),
-            ))
           ],
         ),
       ),
