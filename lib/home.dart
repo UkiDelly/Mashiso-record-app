@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:location/location.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:work_record_app/Record.dart';
+import 'package:work_record_app/google_map.dart';
 import 'package:work_record_app/login.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:work_record_app/preferences.dart';
@@ -16,7 +17,7 @@ class Home extends StatefulWidget {
   State<Home> createState() => _Home();
 }
 
-class _Home extends State<Home> {
+class _Home extends State<Home> with AutomaticKeepAliveClientMixin {
   //
   PageController pageController = PageController(initialPage: 0);
   int currentIndex = 0;
@@ -29,16 +30,16 @@ class _Home extends State<Home> {
   //Location
   Location location = Location();
 
-  // set the location when the map created
-  void _onMapCreated(GoogleMapController controller) {
-    mapController = controller;
+  // // set the location when the map created
+  // void _onMapCreated(GoogleMapController controller) {
+  //   mapController = controller;
 
-    // listen for the location
-    location.onLocationChanged.listen((l) {
-      mapController.animateCamera(CameraUpdate.newCameraPosition(
-          CameraPosition(target: LatLng(l.latitude!, l.longitude!), zoom: 70)));
-    });
-  }
+  //   // listen for the location
+  //   location.onLocationChanged.listen((l) {
+  //     mapController.animateCamera(CameraUpdate.newCameraPosition(
+  //         CameraPosition(target: LatLng(l.latitude!, l.longitude!), zoom: 70)));
+  //   });
+  // }
 
   //Get the current location
   getCurrentLocation() async {
@@ -74,11 +75,6 @@ class _Home extends State<Home> {
   _createData() async {
     final userCollection =
         await FirebaseFirestore.instance.collection('employee').get();
-
-    //get the data
-    var data = userCollection.docs[0].exists;
-
-    print(data);
   }
 
   //Change the page
@@ -97,7 +93,11 @@ class _Home extends State<Home> {
   }
 
   @override
+  bool get wantKeepAlive => true;
+
+  @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Scaffold(
       body: ScrollConfiguration(
         behavior: MyBehavior(),
@@ -283,7 +283,7 @@ class _Home extends State<Home> {
             ),
 
             //Google Map
-            _googleMap(),
+            GoogleMapWidget(location: location),
 
             // test
           ],
@@ -292,29 +292,29 @@ class _Home extends State<Home> {
     );
   }
 
-  Widget _googleMap() {
-    return Container(
-      width: 500,
-      height: 400,
-      decoration: BoxDecoration(
-          border: Border.all(width: 3, color: const Color(0xffFDBF05)),
-          borderRadius: const BorderRadius.all(Radius.circular(25))),
-      child: ClipRRect(
-        borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(20),
-            topRight: Radius.circular(20),
-            bottomRight: Radius.circular(20),
-            bottomLeft: Radius.circular(20)),
-        child: GoogleMap(
-          myLocationButtonEnabled: true,
-          mapType: MapType.normal,
-          onMapCreated: _onMapCreated,
-          initialCameraPosition: CameraPosition(target: _position, zoom: 70),
-          myLocationEnabled: true,
-        ),
-      ),
-    );
-  }
+//   Widget _googleMap() {
+//     return Container(
+//       width: 500,
+//       height: 400,
+//       decoration: BoxDecoration(
+//           border: Border.all(width: 3, color: const Color(0xffFDBF05)),
+//           borderRadius: const BorderRadius.all(Radius.circular(25))),
+//       child: ClipRRect(
+//         borderRadius: const BorderRadius.only(
+//             topLeft: Radius.circular(20),
+//             topRight: Radius.circular(20),
+//             bottomRight: Radius.circular(20),
+//             bottomLeft: Radius.circular(20)),
+//         child: GoogleMap(
+//           myLocationButtonEnabled: true,
+//           mapType: MapType.normal,
+//           onMapCreated: _onMapCreated,
+//           initialCameraPosition: CameraPosition(target: _position, zoom: 70),
+//           myLocationEnabled: true,
+//         ),
+//       ),
+//     );
+//   }
 }
 
 //Remove Glow
