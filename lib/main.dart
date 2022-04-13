@@ -2,11 +2,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:location/location.dart';
+import 'package:work_record_app/mobile_app/home.dart';
 
 import 'employee_app/home.dart';
 import 'employee_app/login.dart';
 import 'employee_app/preferences.dart';
-import 'mobile_app/home.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -136,6 +136,6 @@ class _AdminAppState extends State<AdminApp> {
             primarySwatch: Colors.orange,
             brightness: Brightness.dark),
         themeMode: ThemeMode.system,
-        home: const Scaffold(body: SafeArea(child: MobileHome())));
+        home: const MobileHome());
   }
 }

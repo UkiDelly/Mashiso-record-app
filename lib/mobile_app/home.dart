@@ -9,47 +9,49 @@ class MobileHome extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          //Logo
-          SizedBox(
-              width: 250,
-              child: Image.asset(
-                'assets/mashiso.png',
-              )),
+    return Scaffold(
+      body: Center(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            //Logo
+            SizedBox(
+                width: 250,
+                child: Image.asset(
+                  'assets/mashiso.png',
+                )),
 
-          //
-          const SizedBox(
-            height: 15,
-          ),
+            //
+            const SizedBox(
+              height: 15,
+            ),
 
-          //Employee text and add button
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              const Text(
-                "Employee",
-                style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold),
-              ),
+            //Employee text and add button
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                const Text(
+                  "Employee",
+                  style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold),
+                ),
 
-              //Add Employee
-              IconButton(
-                onPressed: () => Navigator.push(
-                    context,
-                    PageTransition(
-                        child: const AddEmployee(),
-                        type: PageTransitionType.rightToLeftWithFade)),
-                icon: const Icon(Icons.person_add),
-                color: const Color(0xffFDBF05),
-              )
-            ],
-          ),
+                //Add Employee
+                IconButton(
+                  onPressed: () => Navigator.push(
+                      context,
+                      PageTransition(
+                          child: const AddEmployee(),
+                          type: PageTransitionType.leftToRight)),
+                  icon: const Icon(Icons.person_add),
+                  color: const Color(0xffFDBF05),
+                )
+              ],
+            ),
 
-          //Employee list
-          const EmployeeList()
-        ],
+            //Employee list
+            const EmployeeList()
+          ],
+        ),
       ),
     );
   }
