@@ -8,6 +8,7 @@ import 'home.dart';
 
 Color mainColor = const Color(0xffFDBF05);
 
+// ignore: must_be_immutable
 class Login extends StatelessWidget {
   Location location;
   Login({Key? key, required this.location}) : super(key: key);
@@ -23,6 +24,7 @@ class Login extends StatelessWidget {
   }
 }
 
+// ignore: must_be_immutable
 class _Login extends StatefulWidget {
   Location location;
   _Login({Key? key, required this.location}) : super(key: key);
@@ -106,14 +108,6 @@ class __LoginState extends State<_Login> {
                       borderSide:
                           BorderSide(color: Color(0xffFDBF05), width: 3),
                       borderRadius: BorderRadius.all(Radius.circular(25)))),
-              // validator
-              //TODO: Add validator
-              // validator: (value) {
-              //   if (value == null) {
-              //     return "Didn't enter anything";
-              //   }
-              //   return "";
-              // },
             ),
           ),
           const SizedBox(

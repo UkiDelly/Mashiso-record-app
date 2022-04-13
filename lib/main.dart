@@ -6,6 +6,7 @@ import 'package:location/location.dart';
 import 'employee_app/home.dart';
 import 'employee_app/login.dart';
 import 'employee_app/preferences.dart';
+import 'mobile_app/home.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -124,18 +125,17 @@ class _AdminAppState extends State<AdminApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Work Record App',
-      theme: ThemeData(
-          fontFamily: 'Inter',
-          primarySwatch: Colors.orange,
-          brightness: Brightness.light),
-      darkTheme: ThemeData(
-          fontFamily: 'Inter',
-          primarySwatch: Colors.orange,
-          brightness: Brightness.dark),
-      themeMode: ThemeMode.system,
-      home: Container(),
-    );
+        debugShowCheckedModeBanner: false,
+        title: 'Work Record App',
+        theme: ThemeData(
+            fontFamily: 'Inter',
+            primarySwatch: Colors.orange,
+            brightness: Brightness.light),
+        darkTheme: ThemeData(
+            fontFamily: 'Inter',
+            primarySwatch: Colors.orange,
+            brightness: Brightness.dark),
+        themeMode: ThemeMode.system,
+        home: const Scaffold(body: SafeArea(child: MobileHome())));
   }
 }

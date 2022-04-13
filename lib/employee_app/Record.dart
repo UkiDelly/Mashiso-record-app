@@ -56,13 +56,16 @@ class _RecordState extends State<Record> {
   }
 
   Widget recordCard(int index) {
-    String _timeIN = DateFormat.jm().format(data[index]['IN'].toDate());
+    final _timeIN = DateFormat.jm().format(data[index]['IN'].toDate());
     String _timeOUT = '';
     if (data[index]['OUT'] != null) {
       _timeOUT = DateFormat.jm().format(data[index]['OUT'].toDate());
     }
     String _date =
         DateFormat.yMMMMd('en_US').format(data[index]['IN'].toDate());
+
+    
+
 
     return Card(
       elevation: 5,

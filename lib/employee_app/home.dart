@@ -6,7 +6,7 @@ import 'package:page_transition/page_transition.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:work_record_app/employee_app/preferences.dart';
 
-import 'Record.dart';
+import 'record.dart';
 import 'google_map.dart';
 import 'login.dart';
 
@@ -26,12 +26,11 @@ class _Home extends State<Home> with AutomaticKeepAliveClientMixin {
   PageController pageController = PageController(initialPage: 0);
   int currentIndex = 0;
   late bool? status = false;
-  var address;
+  dynamic address;
   DateTime time = DateTime.now();
 
   //*Google map
   late GoogleMapController mapController;
-  final LatLng _position = const LatLng(10.682024, 122.954228);
 
   //*Location
   Location location = Location();
@@ -57,7 +56,7 @@ class _Home extends State<Home> with AutomaticKeepAliveClientMixin {
   //*Send Firebase
   timeInUpload() async {
     var _userId = LoginPreferences.getUserId();
-    final _employee = await FirebaseFirestore.instance
+    await FirebaseFirestore.instance
         .collection('employee')
         .doc(_userId)
         .collection('record')
@@ -86,7 +85,7 @@ class _Home extends State<Home> with AutomaticKeepAliveClientMixin {
         .get();
 
     String _id = _employee.docs.first.id;
-    final _timeOut = await FirebaseFirestore.instance
+    await FirebaseFirestore.instance
         .collection('employee')
         .doc(_userId)
         .collection('record')

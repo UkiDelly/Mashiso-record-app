@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
+// ignore: must_be_immutable
 class GoogleMapWidget extends StatefulWidget {
-  var location;
+  dynamic location;
   GoogleMapWidget({Key? key, required this.location}) : super(key: key);
 
   @override
