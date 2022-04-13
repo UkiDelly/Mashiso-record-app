@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:work_record_app/mobile_app/add_employee.dart';
 import 'package:work_record_app/mobile_app/employee_record.dart';
 
 class MobileHome extends StatelessWidget {
@@ -35,7 +36,11 @@ class MobileHome extends StatelessWidget {
 
               //Add Employee
               IconButton(
-                onPressed: () {},
+                onPressed: () => Navigator.push(
+                    context,
+                    PageTransition(
+                        child: const AddEmployee(),
+                        type: PageTransitionType.rightToLeftWithFade)),
                 icon: const Icon(Icons.person_add),
                 color: const Color(0xffFDBF05),
               )

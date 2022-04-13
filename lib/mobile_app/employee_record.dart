@@ -132,7 +132,7 @@ class _RecordListState extends State<RecordList> {
             itemBuilder: (BuildContext context, int index) {
               //get time
               DateTime _timeInDate = recordList[index]['IN'].toDate();
-              DateTime _timeOutDate = recordList[index]['IN'].toDate();
+              DateTime _timeOutDate = recordList[index]['OUT'].toDate();
 
               String _timeIN = DateFormat.jm().format(_timeInDate);
               String _timeOUT = '';
@@ -140,7 +140,9 @@ class _RecordListState extends State<RecordList> {
                 _timeOUT = DateFormat.jm().format(_timeOutDate);
               }
 
-              final _totalWork = _timeOutDate.difference(_timeInDate);
+              //get how many work
+              final totalWork =
+                  "${_timeOutDate.difference(_timeInDate).inHours} hr ${_timeOutDate.difference(_timeInDate).inMinutes.remainder(60)} min";
 
               //get date
               String _date = DateFormat.yMMMMd('en_US')
@@ -184,7 +186,7 @@ class _RecordListState extends State<RecordList> {
                             color: const Color(0xffFDBF05),
                             borderRadius: BorderRadius.circular(10)),
                         child: Text(
-                          "Total work: ${_totalWork.inHours} Hr ${_totalWork.inMinutes} min",
+                          "Total work: $totalWork",
                           style: const TextStyle(
                               fontSize: 25, fontWeight: FontWeight.w300),
                         ),
@@ -250,7 +252,7 @@ class _RecordListState extends State<RecordList> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Text(
-              "OUT: $timeIn",
+              "OUT: $timeOut",
               style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w400),
             ),
             Container(
