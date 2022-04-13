@@ -16,7 +16,7 @@ class MobileHome extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              //Logo
+              //*Logo
               SizedBox(
                   width: 250,
                   child: Image.asset(
@@ -28,7 +28,7 @@ class MobileHome extends StatelessWidget {
                 height: 15,
               ),
 
-              //Employee text and add button
+              //*Employee text and add button
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
@@ -37,7 +37,7 @@ class MobileHome extends StatelessWidget {
                     style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold),
                   ),
 
-                  //Add Employee
+                  //*Add Employee
                   IconButton(
                     onPressed: () => Navigator.push(
                         context,
@@ -50,7 +50,7 @@ class MobileHome extends StatelessWidget {
                 ],
               ),
 
-              //Employee list
+              //*Employee list
               const EmployeeList()
             ],
           ),
@@ -71,6 +71,8 @@ class _EmployeeListState extends State<EmployeeList> {
   int numOfEmployees = 0;
   List nameList = [];
   List idList = [];
+
+  //*Get the employee list
   getEmployeeList() async {
     final employee =
         await FirebaseFirestore.instance.collection('employee').get();
@@ -86,6 +88,13 @@ class _EmployeeListState extends State<EmployeeList> {
       nameList;
       idList;
     });
+  }
+
+  //rebuild the Widget
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    getEmployeeList();
   }
 
   @override
@@ -108,6 +117,7 @@ class _EmployeeListState extends State<EmployeeList> {
             physics: const ScrollPhysics(),
             itemCount: numOfEmployees,
             itemBuilder: (BuildContext context, int index) {
+              //* Each employee
               return Card(
                 elevation: 3,
                 color: const Color(0xffFDBF05),
@@ -125,6 +135,8 @@ class _EmployeeListState extends State<EmployeeList> {
                           child: EmployeeRecord(
                               employeeId: idList[index], name: nameList[index]),
                           type: PageTransitionType.rightToLeftWithFade)),
+
+                  //* Alert dialog before deleting employee
                   onLongPress: () => NAlertDialog(
                     content: const SizedBox(
                       height: 70,
@@ -146,6 +158,8 @@ class _EmployeeListState extends State<EmployeeList> {
                             "Cancel",
                             style: TextStyle(color: Colors.black),
                           )),
+
+                      //* Delete employee
                       TextButton(
                           onPressed: () async {
                             await FirebaseFirestore.instance
@@ -153,11 +167,8 @@ class _EmployeeListState extends State<EmployeeList> {
                                 .doc(idList[index])
                                 .delete();
 
-                            Navigator.pushReplacement(
-                                context,
-                                PageTransition(
-                                    child: const MobileHome(),
-                                    type: PageTransitionType.fade));
+                            //rebuild the widget
+                            didChangeDependencies();
                           },
                           child: const Text(
                             "Ok",

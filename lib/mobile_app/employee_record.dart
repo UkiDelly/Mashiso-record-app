@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
+import 'package:ndialog/ndialog.dart';
 import 'package:work_record_app/mobile_app/home.dart';
 
 // ignore: must_be_immutable
@@ -45,6 +46,7 @@ class EmployeeRecord extends StatelessWidget {
             //* Record List
             RecordList(
               employeeId: employeeId,
+              name: name,
             )
           ],
         ),
@@ -79,7 +81,9 @@ class EmployeeRecord extends StatelessWidget {
 // ignore: must_be_immutable
 class RecordList extends StatefulWidget {
   String employeeId;
-  RecordList({Key? key, required this.employeeId}) : super(key: key);
+  String name;
+  RecordList({Key? key, required this.employeeId, required this.name})
+      : super(key: key);
 
   @override
   State<RecordList> createState() => _RecordListState();
@@ -89,7 +93,7 @@ class _RecordListState extends State<RecordList> {
   List recordList = [];
   int recordListLength = 0;
 
-  //get the record list
+  //* Get the record list
   getRecord() async {
     final _record = await FirebaseFirestore.instance
         .collection('employee')
@@ -98,14 +102,17 @@ class _RecordListState extends State<RecordList> {
         .orderBy('IN', descending: true)
         .get();
 
-    for (int i = 0; i < _record.docs.length; i++) {
-      recordList.add(_record.docs[i].data());
-    }
-
     setState(() {
       recordList = _record.docs;
       recordListLength = _record.docs.length;
     });
+  }
+
+  //Rebuild Widget
+  @override
+  void didChangeDependencies() {
+    getRecord();
+    super.didChangeDependencies();
   }
 
   @override
@@ -139,14 +146,13 @@ class _RecordListState extends State<RecordList> {
               if (recordList[index]['OUT'] != null) {
                 _timeOUT = DateFormat.jm().format(_timeOutDate);
               }
+              //get date
+              String _date = DateFormat.yMMMMd('en_US')
+                  .format(recordList[index]['IN'].toDate());
 
               //get how many work
               final totalWork =
                   "${_timeOutDate.difference(_timeInDate).inHours} hr ${_timeOutDate.difference(_timeInDate).inMinutes.remainder(60)} min";
-
-              //get date
-              String _date = DateFormat.yMMMMd('en_US')
-                  .format(recordList[index]['IN'].toDate());
 
               //get location
               GeoPoint _locationIN = recordList[index]['locationIN'];
@@ -156,42 +162,86 @@ class _RecordListState extends State<RecordList> {
                 shape: const RoundedRectangleBorder(
                     borderRadius: BorderRadius.all(Radius.circular(20))),
                 elevation: 5,
-                child: Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      border:
-                          Border.all(color: const Color(0xffFDBF05), width: 3)),
-                  child: Column(
-                    children: [
-                      // Time in time and location
-                      Text(
-                        _date,
-                        style: const TextStyle(
-                            fontSize: 30, fontWeight: FontWeight.bold),
-                      ),
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(20),
+                  splashFactory: NoSplash.splashFactory,
+                  //* Alert before delete record
+                  onLongPress: () => NAlertDialog(
+                    content: const SizedBox(
+                      height: 70,
+                      child: Center(
+                          child: Text(
+                        "Are you sure to delete his record?",
+                        style: TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.w500),
+                      )),
+                    ),
+                    actions: [
+                      TextButton(
+                          style: const ButtonStyle(
+                              splashFactory: NoSplash.splashFactory),
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          child: const Text(
+                            "Cancel",
+                            style: TextStyle(color: Colors.black),
+                          )),
+                      TextButton(
+                          onPressed: () async {
+                            Navigator.of(context).pop();
+                            didChangeDependencies();
 
-                      const SizedBox(
-                        height: 5,
-                      ),
-
-                      //Time in/out and map
-                      timeInOutAndMap(
-                          index, _timeIN, _timeOUT, _locationIN, _locationOUT),
-
-                      // Total work time
-                      Container(
-                        padding: const EdgeInsets.all(5),
-                        decoration: BoxDecoration(
-                            color: const Color(0xffFDBF05),
-                            borderRadius: BorderRadius.circular(10)),
-                        child: Text(
-                          "Total work: $totalWork",
-                          style: const TextStyle(
-                              fontSize: 25, fontWeight: FontWeight.w300),
-                        ),
-                      )
+                            await FirebaseFirestore.instance
+                                .collection('employee')
+                                .doc(widget.employeeId)
+                                .collection('record')
+                                .doc(recordList[index].id)
+                                .delete();
+                          },
+                          child: const Text(
+                            "Ok",
+                            style: TextStyle(color: Colors.red),
+                          )),
                     ],
+                  ).show(context),
+                  child: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                            color: const Color(0xffFDBF05), width: 3)),
+                    child: Column(
+                      children: [
+                        //* Time in time and location
+                        Text(
+                          _date,
+                          style: const TextStyle(
+                              fontSize: 30, fontWeight: FontWeight.bold),
+                        ),
+
+                        const SizedBox(
+                          height: 5,
+                        ),
+
+                        //*Time in/out and map
+                        timeInOutAndMap(index, _timeIN, _timeOUT, _locationIN,
+                            _locationOUT),
+
+                        //* Total work time
+                        Container(
+                          padding: const EdgeInsets.all(5),
+                          decoration: BoxDecoration(
+                              color: const Color(0xffFDBF05),
+                              borderRadius: BorderRadius.circular(10)),
+                          child: Text(
+                            "Total work: $totalWork",
+                            style: const TextStyle(
+                                fontSize: 25, fontWeight: FontWeight.w300),
+                          ),
+                        )
+                      ],
+                    ),
                   ),
                 ),
               );
@@ -208,7 +258,7 @@ class _RecordListState extends State<RecordList> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        //Time in and map
+        //*Time in and map
         Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
@@ -247,7 +297,7 @@ class _RecordListState extends State<RecordList> {
           ],
         ),
 
-        //Time in and map
+        //*Time in and map
         Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
