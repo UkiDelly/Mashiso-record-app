@@ -44,30 +44,6 @@ class _Home extends State<Home> with AutomaticKeepAliveClientMixin {
     });
   }
 
-  // //*Service and permission
-  // late bool _serviceEnabled;
-  // late PermissionStatus _permissionGranted;
-
-  // //*check the permission
-  // checkPermission() async {
-  //   //check the service in enabled
-  //   _serviceEnabled = await location.serviceEnabled();
-  //   if (!_serviceEnabled) {
-  //     _serviceEnabled = await location.requestService();
-  //   }
-
-  //   //*check the permission is enabled
-  //   _permissionGranted = await location.hasPermission();
-  //   if (_permissionGranted == PermissionStatus.denied) {
-  //     _permissionGranted = await location.requestPermission();
-  //   }
-
-  //   setState(() {
-  //     _serviceEnabled;
-  //     _permissionGranted;
-  //   });
-  // }
-
   //*Change the page
   _changePage(int index) {
     setState(() {
@@ -78,16 +54,15 @@ class _Home extends State<Home> with AutomaticKeepAliveClientMixin {
   }
 
   //*Send Firebase
-  timeInUpload(var time, var address) async {
+  timeInUpload() async {
     var _userId = LoginPreferences.getUserId();
     final _employee = await FirebaseFirestore.instance
         .collection('employee')
         .doc(_userId)
         .collection('record')
         .add({
-      'status': "IN",
-      'time': Timestamp.fromDate(time),
-      'location': GeoPoint(address.latitude, address.longitude)
+      'IN': Timestamp.fromDate(time),
+      'locationIN': GeoPoint(address.latitude, address.longitude)
     });
 
     Fluttertoast.showToast(
@@ -106,10 +81,18 @@ class _Home extends State<Home> with AutomaticKeepAliveClientMixin {
         .collection('employee')
         .doc(_userId)
         .collection('record')
-        .add({
-      'status': "OUT",
-      'time': Timestamp.fromDate(time),
-      'location': GeoPoint(address.latitude, address.longitude)
+        .orderBy('IN', descending: true)
+        .get();
+
+    String _id = _employee.docs.first.id;
+    final _timeOut = await FirebaseFirestore.instance
+        .collection('employee')
+        .doc(_userId)
+        .collection('record')
+        .doc(_id)
+        .update({
+      "OUT": Timestamp.fromDate(time),
+      "locationOUT": GeoPoint(address.latitude, address.longitude)
     });
 
     Fluttertoast.showToast(
@@ -283,12 +266,12 @@ class _Home extends State<Home> with AutomaticKeepAliveClientMixin {
                             address;
                           });
 
-                          timeInUpload(time, address);
+                          timeInUpload();
                           await LoginPreferences.setInOut(status!);
                         },
                         child: const Center(
                             child: Text(
-                          "Time in",
+                          "IN",
                           style: TextStyle(
                               fontWeight: FontWeight.bold, fontSize: 30),
                         )),
@@ -332,7 +315,7 @@ class _Home extends State<Home> with AutomaticKeepAliveClientMixin {
                         },
                         child: const Center(
                             child: Text(
-                          "Time out",
+                          "OUT",
                           style: TextStyle(
                               fontWeight: FontWeight.bold, fontSize: 25),
                         )),
