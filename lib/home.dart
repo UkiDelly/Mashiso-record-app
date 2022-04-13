@@ -85,7 +85,7 @@ class _Home extends State<Home> with AutomaticKeepAliveClientMixin {
         .doc(_userId)
         .collection('record')
         .add({
-      'status': "time in",
+      'status': "IN",
       'time': Timestamp.fromDate(time),
       'location': GeoPoint(address.latitude, address.longitude)
     });
@@ -107,7 +107,7 @@ class _Home extends State<Home> with AutomaticKeepAliveClientMixin {
         .doc(_userId)
         .collection('record')
         .add({
-      'status': "time out",
+      'status': "OUT",
       'time': Timestamp.fromDate(time),
       'location': GeoPoint(address.latitude, address.longitude)
     });
@@ -270,7 +270,6 @@ class _Home extends State<Home> with AutomaticKeepAliveClientMixin {
                         highlightColor: Colors.transparent,
                         splashFactory: NoSplash.splashFactory,
                         onTap: () async {
-                          print("Time in");
                           //get the current location
                           getCurrentLocation();
 
@@ -316,7 +315,6 @@ class _Home extends State<Home> with AutomaticKeepAliveClientMixin {
                         highlightColor: Colors.transparent,
                         splashFactory: NoSplash.splashFactory,
                         onTap: () async {
-                          print("Time out");
                           //get the current location
                           getCurrentLocation();
 

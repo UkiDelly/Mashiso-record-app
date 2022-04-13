@@ -28,8 +28,8 @@ class _GoogleMapWidgetState extends State<GoogleMapWidget> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 500,
-      height: 400,
+      width: MediaQuery.of(context).size.width * 0.9,
+      height: MediaQuery.of(context).size.width * 0.9,
       decoration: BoxDecoration(
           border: Border.all(width: 3, color: const Color(0xffFDBF05)),
           borderRadius: const BorderRadius.all(Radius.circular(25))),

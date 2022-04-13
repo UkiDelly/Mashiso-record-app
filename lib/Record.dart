@@ -92,10 +92,10 @@ class _RecordState extends State<Record> {
             flex: 4,
           ),
           Container(
-            width: 150,
-            height: 150,
+            width: 100,
+            height: 100,
             decoration: BoxDecoration(
-                color: data[index]['status'] == 'time in'
+                color: data[index]['status'] == 'IN'
                     ? const Color(0xffFDBF05)
                     : Colors.transparent,
                 border: Border.all(color: Colors.black, width: 5),
