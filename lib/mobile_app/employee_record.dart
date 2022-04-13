@@ -139,11 +139,17 @@ class _RecordListState extends State<RecordList> {
             itemBuilder: (BuildContext context, int index) {
               //get time
               DateTime _timeInDate = recordList[index]['IN'].toDate();
-              DateTime _timeOutDate = recordList[index]['OUT'].toDate();
+              DateTime? _timeOutDate;
+              try {
+                _timeOutDate = recordList[index]['OUT'].toDate();
+              } catch (e) {
+                print(e);
+                _timeOutDate = null;
+              }
 
               String _timeIN = DateFormat.jm().format(_timeInDate);
               String _timeOUT = '';
-              if (recordList[index]['OUT'] != null) {
+              if (_timeOutDate != null) {
                 _timeOUT = DateFormat.jm().format(_timeOutDate);
               }
               //get date
@@ -151,12 +157,20 @@ class _RecordListState extends State<RecordList> {
                   .format(recordList[index]['IN'].toDate());
 
               //get how many work
-              final totalWork =
-                  "${_timeOutDate.difference(_timeInDate).inHours} hr ${_timeOutDate.difference(_timeInDate).inMinutes.remainder(60)} min";
+              String totalWork = '';
+              if (_timeOutDate != null) {
+                totalWork =
+                    "${_timeOutDate.difference(_timeInDate).inHours} hr ${_timeOutDate.difference(_timeInDate).inMinutes.remainder(60)} min";
+              }
 
               //get location
               GeoPoint _locationIN = recordList[index]['locationIN'];
-              GeoPoint _locationOUT = recordList[index]['locationOUT'];
+              late GeoPoint? _locationOUT;
+              try {
+                _locationOUT = recordList[index]['locationOUT'];
+              } catch (e) {
+                _locationOUT = null;
+              }
               //
               return Card(
                 shape: const RoundedRectangleBorder(
@@ -252,8 +266,8 @@ class _RecordListState extends State<RecordList> {
     );
   }
 
-  Widget timeInOutAndMap(int index, String timeIn, String timeOut,
-      GeoPoint locationIN, GeoPoint locationOUT) {
+  Widget timeInOutAndMap(int index, String timeIn, String? timeOut,
+      GeoPoint locationIN, GeoPoint? locationOUT) {
     const MarkerId timeInMarker = MarkerId("IN");
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -297,44 +311,49 @@ class _RecordListState extends State<RecordList> {
           ],
         ),
 
-        //*Time in and map
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text(
-              "OUT: $timeOut",
-              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w400),
-            ),
-            Container(
-                margin: const EdgeInsets.fromLTRB(8, 0, 8, 8),
-                decoration: BoxDecoration(
-                    border: Border.all(),
-                    borderRadius: BorderRadius.circular(20)),
-                width: (MediaQuery.of(context).size.width - 10) * 0.4,
-                height: 200,
-                child: ClipRRect(
-                  borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(20),
-                      topRight: Radius.circular(20),
-                      bottomRight: Radius.circular(20),
-                      bottomLeft: Radius.circular(20)),
-                  child: GoogleMap(
-                      zoomControlsEnabled: false,
-                      markers: {
-                        Marker(
-                            markerId: timeInMarker,
-                            position: LatLng(
-                                locationOUT.latitude, locationOUT.longitude))
-                      },
-                      mapType: MapType.normal,
-                      mapToolbarEnabled: false,
-                      initialCameraPosition: CameraPosition(
-                          target: LatLng(
-                              locationOUT.latitude, locationOUT.longitude),
-                          zoom: 20)),
-                )),
-          ],
-        )
+        //*Time out and map
+        // SizedBox(
+        //   child: timeOut != ''
+        //       ? Column(
+        //           crossAxisAlignment: CrossAxisAlignment.center,
+        //           children: [
+        //             Text(
+        //               "OUT: $timeOut",
+        //               style: const TextStyle(
+        //                   fontSize: 20, fontWeight: FontWeight.w400),
+        //             ),
+        //             Container(
+        //                 margin: const EdgeInsets.fromLTRB(8, 0, 8, 8),
+        //                 decoration: BoxDecoration(
+        //                     border: Border.all(),
+        //                     borderRadius: BorderRadius.circular(20)),
+        //                 width: (MediaQuery.of(context).size.width - 10) * 0.4,
+        //                 height: 200,
+        //                 child: ClipRRect(
+        //                   borderRadius: const BorderRadius.only(
+        //                       topLeft: Radius.circular(20),
+        //                       topRight: Radius.circular(20),
+        //                       bottomRight: Radius.circular(20),
+        //                       bottomLeft: Radius.circular(20)),
+        //                   child: GoogleMap(
+        //                       zoomControlsEnabled: false,
+        //                       markers: {
+        //                         Marker(
+        //                             markerId: timeInMarker,
+        //                             position: LatLng(locationOUT!.latitude,
+        //                                 locationOUT.longitude))
+        //                       },
+        //                       mapType: MapType.normal,
+        //                       mapToolbarEnabled: false,
+        //                       initialCameraPosition: CameraPosition(
+        //                           target: LatLng(locationOUT.latitude,
+        //                               locationOUT.longitude),
+        //                           zoom: 20)),
+        //                 )),
+        //           ],
+        //         )
+        //       : null,
+        // )
       ],
     );
   }
