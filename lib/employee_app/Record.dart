@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
-import 'package:work_record_app/preferences.dart';
+import 'package:work_record_app/employee_app/preferences.dart';
 
 class Record extends StatefulWidget {
   const Record({Key? key}) : super(key: key);

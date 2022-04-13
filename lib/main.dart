@@ -2,10 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:location/location.dart';
-import 'package:work_record_app/home.dart';
-import 'package:work_record_app/preferences.dart';
 
-import 'login.dart';
+import 'employee_app/home.dart';
+import 'employee_app/login.dart';
+import 'employee_app/preferences.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -15,14 +15,24 @@ void main() async {
   runApp(const MyApp());
 }
 
-class MyApp extends StatefulWidget {
+class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
   @override
-  State<MyApp> createState() => _MyAppState();
+  Widget build(BuildContext context) {
+    return const AdminApp();
+    // const EmployeeApp();
+  }
 }
 
-class _MyAppState extends State<MyApp> {
+class EmployeeApp extends StatefulWidget {
+  const EmployeeApp({Key? key}) : super(key: key);
+
+  @override
+  State<EmployeeApp> createState() => _EmployeeAppState();
+}
+
+class _EmployeeAppState extends State<EmployeeApp> {
   String? userId = 'empty_user_id';
   var login;
 
@@ -66,7 +76,6 @@ class _MyAppState extends State<MyApp> {
     checkPermission();
   }
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -101,5 +110,32 @@ class _MyAppState extends State<MyApp> {
             );
           },
         ));
+  }
+}
+
+class AdminApp extends StatefulWidget {
+  const AdminApp({Key? key}) : super(key: key);
+
+  @override
+  State<AdminApp> createState() => _AdminAppState();
+}
+
+class _AdminAppState extends State<AdminApp> {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'Work Record App',
+      theme: ThemeData(
+          fontFamily: 'Inter',
+          primarySwatch: Colors.orange,
+          brightness: Brightness.light),
+      darkTheme: ThemeData(
+          fontFamily: 'Inter',
+          primarySwatch: Colors.orange,
+          brightness: Brightness.dark),
+      themeMode: ThemeMode.system,
+      home: Container(),
+    );
   }
 }

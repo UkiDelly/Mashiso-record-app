@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:location/location.dart';
 import 'package:page_transition/page_transition.dart';
-import 'package:work_record_app/home.dart';
-import 'package:work_record_app/preferences.dart';
+import 'package:work_record_app/employee_app/preferences.dart';
+
+import 'home.dart';
 
 Color mainColor = const Color(0xffFDBF05);
 

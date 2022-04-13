@@ -3,11 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:location/location.dart';
 import 'package:page_transition/page_transition.dart';
-import 'package:work_record_app/Record.dart';
-import 'package:work_record_app/google_map.dart';
-import 'package:work_record_app/login.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:work_record_app/preferences.dart';
+import 'package:work_record_app/employee_app/preferences.dart';
+
+import 'Record.dart';
+import 'google_map.dart';
+import 'login.dart';
 
 // ignore: must_be_immutable
 class Home extends StatefulWidget {
