@@ -27,7 +27,6 @@ class _Home extends State<Home> with AutomaticKeepAliveClientMixin {
   late bool? status = false;
   var address;
   DateTime time = DateTime.now();
-  var temp;
 
   //*Google map
   late GoogleMapController mapController;
@@ -104,10 +103,6 @@ class _Home extends State<Home> with AutomaticKeepAliveClientMixin {
         backgroundColor: Colors.grey,
         textColor: Colors.white,
         fontSize: 20.0);
-
-    setState(() {
-      temp;
-    });
   }
 
   @override
@@ -276,7 +271,7 @@ class _Home extends State<Home> with AutomaticKeepAliveClientMixin {
                         },
                         child: const Center(
                             child: Text(
-                          "Time in",
+                          "IN",
                           style: TextStyle(
                               fontWeight: FontWeight.bold, fontSize: 30),
                         )),
@@ -320,7 +315,7 @@ class _Home extends State<Home> with AutomaticKeepAliveClientMixin {
                         },
                         child: const Center(
                             child: Text(
-                          "Time out",
+                          "OUT",
                           style: TextStyle(
                               fontWeight: FontWeight.bold, fontSize: 25),
                         )),
@@ -333,12 +328,6 @@ class _Home extends State<Home> with AutomaticKeepAliveClientMixin {
             const SizedBox(
               height: 15,
             ),
-
-            // test
-            Card(
-              child: Center(child: Text("$temp")),
-            ),
-            //
 
             //Google Map
             GoogleMapWidget(location: location),
