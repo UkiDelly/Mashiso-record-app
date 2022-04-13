@@ -39,6 +39,8 @@ dependencies:
   shared_preferences: 
   intl:
   fluttertoast:
+  flutter_slidable:
+  ndialog: 
     
 
 
