@@ -189,9 +189,12 @@ class _Home extends State<Home> with AutomaticKeepAliveClientMixin {
               height: 50,
             ),
             //Logo
-            Image.asset(
-              'assets/mashiso.png',
-              height: 150,
+            Hero(
+              tag: 'logo',
+              child: Image.asset(
+                'assets/mashiso.png',
+                height: 150,
+              ),
             ),
 
             const SizedBox(height: 30),
