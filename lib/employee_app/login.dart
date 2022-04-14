@@ -37,7 +37,6 @@ class __LoginState extends State<_Login> {
   TextEditingController usernameController = TextEditingController(),
       passwordController = TextEditingController();
   //GlobalKey for the valdation
-  final formGlobalKey = GlobalKey<FormState>();
   dynamic exist = 'null';
   bool showPassword = false;
   String username = "", password = "", name = "";
@@ -76,7 +75,6 @@ class __LoginState extends State<_Login> {
   @override
   Widget build(BuildContext context) {
     return Form(
-      key: formGlobalKey,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,

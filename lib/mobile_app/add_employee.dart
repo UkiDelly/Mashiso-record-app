@@ -9,32 +9,8 @@ class AddEmployee extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      body: SafeArea(
-          child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          const SizedBox(
-            height: 20,
-          ),
-
-          //Logo
-          Center(
-            child: Image.asset(
-              'assets/mashiso.png',
-              height: 250,
-            ),
-          ),
-
-          const SizedBox(
-            height: 40,
-          ),
-
-          //Add new employee
-          const AddNewEmployeeWidget()
-        ],
-      )),
+    return const Scaffold(
+      body: SafeArea(child: AddNewEmployeeWidget()),
     );
   }
 }
@@ -75,114 +51,138 @@ class _AddNewEmployeeWidgetState extends State<AddNewEmployeeWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        //name
-        SizedBox(
-          width: 300,
-          child: TextField(
-            controller: nameController,
-            textInputAction: TextInputAction.next,
-            decoration: const InputDecoration(
-                focusColor: Color(0xffFDBF05),
-                prefixIcon: Icon(Icons.alternate_email),
-                focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Color(0xffFDBF05), width: 3),
-                    borderRadius: BorderRadius.all(Radius.circular(25))),
-                hintText: "Enter name",
-                enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Color(0xffFDBF05), width: 3),
-                    borderRadius: BorderRadius.all(Radius.circular(25)))),
-          ),
-        ),
-
-        //
-        const SizedBox(
-          height: 10,
-        ),
-        //username
-        SizedBox(
-          width: 300,
-          child: TextField(
-            controller: usernameController,
-            textInputAction: TextInputAction.next,
-            decoration: const InputDecoration(
-                focusColor: Color(0xffFDBF05),
-                prefixIcon: Icon(Icons.person),
-                focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Color(0xffFDBF05), width: 3),
-                    borderRadius: BorderRadius.all(Radius.circular(25))),
-                hintText: "Enter username",
-                enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Color(0xffFDBF05), width: 3),
-                    borderRadius: BorderRadius.all(Radius.circular(25)))),
-          ),
-        ),
-
-        //
-        const SizedBox(
-          height: 10,
-        ),
-
-        //password
-        SizedBox(
-          width: 300,
-          child: TextField(
-            controller: passwordController,
-            textInputAction: TextInputAction.next,
-            obscureText: true,
-            decoration: const InputDecoration(
-                focusColor: Color(0xffFDBF05),
-                prefixIcon: Icon(Icons.lock),
-                focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Color(0xffFDBF05), width: 3),
-                    borderRadius: BorderRadius.all(Radius.circular(25))),
-                hintText: "Enter password",
-                enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Color(0xffFDBF05), width: 3),
-                    borderRadius: BorderRadius.all(Radius.circular(25)))),
-          ),
-        ),
-
-        const SizedBox(
-          height: 10,
-        ),
-
-        //Login Button
-        SizedBox(
-          width: 170,
-          height: 50,
-          child: ElevatedButton(
-            onPressed: () {
-              setState(() {
-                usernameController;
-                nameController;
-                passwordController;
-              });
-
-              addEmployee();
-
-              Future.delayed(
-                  const Duration(seconds: 1),
-                  (() => Navigator.pushReplacement(
-                      context,
-                      PageTransition(
-                          child: const MobileHome(),
-                          type: PageTransitionType.leftToRight))));
-            },
-            child: const Text(
-              "Add",
-              style: TextStyle(
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 30),
+    return SingleChildScrollView(
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            const SizedBox(height: 40),
+            // Logo
+            Center(
+              child: Image.asset(
+                'assets/mashiso.png',
+                height: 250,
+              ),
             ),
-            style: ButtonStyle(
-                backgroundColor:
-                    MaterialStateProperty.all(const Color(0xffFDBF05))),
-          ),
+
+            const SizedBox(
+              height: 30,
+            ),
+            // name
+            SizedBox(
+              width: 300,
+              child: TextField(
+                controller: nameController,
+                textInputAction: TextInputAction.next,
+                decoration: const InputDecoration(
+                    focusColor: Color(0xffFDBF05),
+                    prefixIcon: Icon(Icons.alternate_email),
+                    focusedBorder: OutlineInputBorder(
+                        borderSide:
+                            BorderSide(color: Color(0xffFDBF05), width: 3),
+                        borderRadius: BorderRadius.all(Radius.circular(25))),
+                    hintText: "Enter name",
+                    enabledBorder: OutlineInputBorder(
+                        borderSide:
+                            BorderSide(color: Color(0xffFDBF05), width: 3),
+                        borderRadius: BorderRadius.all(Radius.circular(25)))),
+              ),
+            ),
+
+            //
+            const SizedBox(
+              height: 10,
+            ),
+            //username
+            SizedBox(
+              width: 300,
+              child: TextField(
+                controller: usernameController,
+                textInputAction: TextInputAction.next,
+                decoration: const InputDecoration(
+                    focusColor: Color(0xffFDBF05),
+                    prefixIcon: Icon(Icons.person),
+                    focusedBorder: OutlineInputBorder(
+                        borderSide:
+                            BorderSide(color: Color(0xffFDBF05), width: 3),
+                        borderRadius: BorderRadius.all(Radius.circular(25))),
+                    hintText: "Enter username",
+                    enabledBorder: OutlineInputBorder(
+                        borderSide:
+                            BorderSide(color: Color(0xffFDBF05), width: 3),
+                        borderRadius: BorderRadius.all(Radius.circular(25)))),
+              ),
+            ),
+
+            //
+            const SizedBox(
+              height: 10,
+            ),
+
+            //password
+            SizedBox(
+              width: 300,
+              child: TextField(
+                controller: passwordController,
+                textInputAction: TextInputAction.next,
+                obscureText: true,
+                decoration: const InputDecoration(
+                    focusColor: Color(0xffFDBF05),
+                    prefixIcon: Icon(Icons.lock),
+                    focusedBorder: OutlineInputBorder(
+                        borderSide:
+                            BorderSide(color: Color(0xffFDBF05), width: 3),
+                        borderRadius: BorderRadius.all(Radius.circular(25))),
+                    hintText: "Enter password",
+                    enabledBorder: OutlineInputBorder(
+                        borderSide:
+                            BorderSide(color: Color(0xffFDBF05), width: 3),
+                        borderRadius: BorderRadius.all(Radius.circular(25)))),
+              ),
+            ),
+
+            const SizedBox(
+              height: 10,
+            ),
+
+            //Add Button
+            SizedBox(
+              width: 170,
+              height: 50,
+              child: ElevatedButton(
+                onPressed: () {
+                  setState(() {
+                    usernameController;
+                    nameController;
+                    passwordController;
+                  });
+
+                  addEmployee();
+
+                  Future.delayed(
+                      const Duration(seconds: 1),
+                      (() => Navigator.pushReplacement(
+                          context,
+                          PageTransition(
+                              child: const MobileHome(),
+                              type: PageTransitionType.leftToRight))));
+                },
+                child: const Text(
+                  "Add",
+                  style: TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 30),
+                ),
+                style: ButtonStyle(
+                    backgroundColor:
+                        MaterialStateProperty.all(const Color(0xffFDBF05))),
+              ),
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
 }

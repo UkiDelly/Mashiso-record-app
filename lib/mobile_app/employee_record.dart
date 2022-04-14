@@ -312,48 +312,48 @@ class _RecordListState extends State<RecordList> {
         ),
 
         //*Time out and map
-        // SizedBox(
-        //   child: timeOut != ''
-        //       ? Column(
-        //           crossAxisAlignment: CrossAxisAlignment.center,
-        //           children: [
-        //             Text(
-        //               "OUT: $timeOut",
-        //               style: const TextStyle(
-        //                   fontSize: 20, fontWeight: FontWeight.w400),
-        //             ),
-        //             Container(
-        //                 margin: const EdgeInsets.fromLTRB(8, 0, 8, 8),
-        //                 decoration: BoxDecoration(
-        //                     border: Border.all(),
-        //                     borderRadius: BorderRadius.circular(20)),
-        //                 width: (MediaQuery.of(context).size.width - 10) * 0.4,
-        //                 height: 200,
-        //                 child: ClipRRect(
-        //                   borderRadius: const BorderRadius.only(
-        //                       topLeft: Radius.circular(20),
-        //                       topRight: Radius.circular(20),
-        //                       bottomRight: Radius.circular(20),
-        //                       bottomLeft: Radius.circular(20)),
-        //                   child: GoogleMap(
-        //                       zoomControlsEnabled: false,
-        //                       markers: {
-        //                         Marker(
-        //                             markerId: timeInMarker,
-        //                             position: LatLng(locationOUT!.latitude,
-        //                                 locationOUT.longitude))
-        //                       },
-        //                       mapType: MapType.normal,
-        //                       mapToolbarEnabled: false,
-        //                       initialCameraPosition: CameraPosition(
-        //                           target: LatLng(locationOUT.latitude,
-        //                               locationOUT.longitude),
-        //                           zoom: 20)),
-        //                 )),
-        //           ],
-        //         )
-        //       : null,
-        // )
+        SizedBox(
+          child: timeOut != ''
+              ? Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      "OUT: $timeOut",
+                      style: const TextStyle(
+                          fontSize: 20, fontWeight: FontWeight.w400),
+                    ),
+                    Container(
+                        margin: const EdgeInsets.fromLTRB(8, 0, 8, 8),
+                        decoration: BoxDecoration(
+                            border: Border.all(),
+                            borderRadius: BorderRadius.circular(20)),
+                        width: (MediaQuery.of(context).size.width - 10) * 0.4,
+                        height: 200,
+                        child: ClipRRect(
+                          borderRadius: const BorderRadius.only(
+                              topLeft: Radius.circular(20),
+                              topRight: Radius.circular(20),
+                              bottomRight: Radius.circular(20),
+                              bottomLeft: Radius.circular(20)),
+                          child: GoogleMap(
+                              zoomControlsEnabled: false,
+                              markers: {
+                                Marker(
+                                    markerId: timeInMarker,
+                                    position: LatLng(locationOUT!.latitude,
+                                        locationOUT.longitude))
+                              },
+                              mapType: MapType.normal,
+                              mapToolbarEnabled: false,
+                              initialCameraPosition: CameraPosition(
+                                  target: LatLng(locationOUT.latitude,
+                                      locationOUT.longitude),
+                                  zoom: 20)),
+                        )),
+                  ],
+                )
+              : null,
+        )
       ],
     );
   }

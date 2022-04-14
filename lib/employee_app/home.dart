@@ -109,7 +109,7 @@ class _Home extends State<Home> with AutomaticKeepAliveClientMixin {
   void initState() {
     super.initState();
     // check permission
-    // WidgetsBinding.instance?.addPostFrameCallback((_) => checkPermission());
+
     location = widget.location;
 
     //bring the last state of the time in/out

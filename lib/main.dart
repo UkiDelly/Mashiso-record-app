@@ -114,14 +114,9 @@ class _EmployeeAppState extends State<EmployeeApp> {
   }
 }
 
-class AdminApp extends StatefulWidget {
+class AdminApp extends StatelessWidget {
   const AdminApp({Key? key}) : super(key: key);
 
-  @override
-  State<AdminApp> createState() => _AdminAppState();
-}
-
-class _AdminAppState extends State<AdminApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -136,6 +131,7 @@ class _AdminAppState extends State<AdminApp> {
             primarySwatch: Colors.orange,
             brightness: Brightness.dark),
         themeMode: ThemeMode.system,
+        
         home: const MobileHome());
   }
 }

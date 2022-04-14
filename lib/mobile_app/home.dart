@@ -11,6 +11,7 @@ class MobileHome extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: SafeArea(
         child: Center(
           child: Column(
@@ -43,7 +44,7 @@ class MobileHome extends StatelessWidget {
                         context,
                         PageTransition(
                             child: const AddEmployee(),
-                            type: PageTransitionType.leftToRight)),
+                            type: PageTransitionType.bottomToTop)),
                     icon: const Icon(Icons.person_add),
                     color: const Color(0xffFDBF05),
                   )
@@ -168,6 +169,7 @@ class _EmployeeListState extends State<EmployeeList> {
                                 .delete();
 
                             //rebuild the widget
+                            Navigator.pop(context);
                             didChangeDependencies();
                           },
                           child: const Text(
