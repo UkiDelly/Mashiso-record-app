@@ -131,7 +131,6 @@ class AdminApp extends StatelessWidget {
             primarySwatch: Colors.orange,
             brightness: Brightness.dark),
         themeMode: ThemeMode.system,
-        
         home: const MobileHome());
   }
 }
