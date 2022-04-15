@@ -138,7 +138,7 @@ class _EmployeeListState extends State<EmployeeList> {
                               child: EmployeeRecord(
                                   employeeId: idList[index],
                                   name: nameList[index]),
-                              type: PageTransitionType.rightToLeftWithFade)),
+                              type: PageTransitionType.rightToLeft)),
 
                       //* Alert dialog before deleting employee
                       onLongPress: () => NAlertDialog(
