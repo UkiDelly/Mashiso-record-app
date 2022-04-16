@@ -1,8 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/services.dart';
 import 'package:location/location.dart';
 import 'package:work_record_app/mobile_app/home.dart';
+import 'package:work_record_app/tablet_app/home.dart';
 
 import 'employee_app/home.dart';
 import 'employee_app/login.dart';
@@ -21,7 +23,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const AdminApp();
+    return const AdminTablet();
     // const EmployeeApp();
   }
 }
@@ -134,3 +136,35 @@ class AdminApp extends StatelessWidget {
         home: const MobileHome());
   }
 }
+
+class AdminTablet extends StatefulWidget {
+  const AdminTablet({Key? key}) : super(key: key);
+
+  @override
+  State<AdminTablet> createState() => _AdminTabletState();
+}
+
+class _AdminTabletState extends State<AdminTablet> {
+  @override
+  Widget build(BuildContext context) {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.landscapeRight,
+    ]);
+
+    return MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'Work Record App',
+        theme: ThemeData(
+            fontFamily: 'Inter',
+            primarySwatch: Colors.orange,
+            brightness: Brightness.light),
+        darkTheme: ThemeData(
+            fontFamily: 'Inter',
+            primarySwatch: Colors.orange,
+            brightness: Brightness.dark),
+        themeMode: ThemeMode.system,
+        home: const TabletHome());
+  }
+}
+
+const mainColor = Color(0xffFDBF05);

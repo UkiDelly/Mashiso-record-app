@@ -14,21 +14,21 @@ class MobileHome extends StatelessWidget {
       resizeToAvoidBottomInset: false,
       body: SafeArea(
         child: Center(
-          child: EmployeeList(),
+          child: _EmployeeList(),
         ),
       ),
     );
   }
 }
 
-class EmployeeList extends StatefulWidget {
-  const EmployeeList({Key? key}) : super(key: key);
+class _EmployeeList extends StatefulWidget {
+  const _EmployeeList({Key? key}) : super(key: key);
 
   @override
-  State<EmployeeList> createState() => _EmployeeListState();
+  State<_EmployeeList> createState() => __EmployeeListState();
 }
 
-class _EmployeeListState extends State<EmployeeList> {
+class __EmployeeListState extends State<_EmployeeList> {
   int numOfEmployees = 0;
   List nameList = [];
   List idList = [];
@@ -146,7 +146,7 @@ class _EmployeeListState extends State<EmployeeList> {
                           height: 70,
                           child: Center(
                               child: Text(
-                            "Are you sure to delete his employee?",
+                            "Are you sure to delete this employee?",
                             style: TextStyle(
                                 fontSize: 20, fontWeight: FontWeight.w500),
                           )),
@@ -160,7 +160,7 @@ class _EmployeeListState extends State<EmployeeList> {
                               },
                               child: const Text(
                                 "Cancel",
-                                style: TextStyle(color: Colors.black),
+                                style: TextStyle(),
                               )),
 
                           //* Delete employee
