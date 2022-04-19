@@ -113,26 +113,26 @@ class _EmployeeListState extends State<_EmployeeList> {
           //Employee and add button
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              const Spacer(),
-              const Text(
+            children: const [
+              Spacer(),
+              Text(
                 "Employee",
                 style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
               ),
-              const Spacer(
+              Spacer(
                 flex: 6,
               ),
 
               //Add Employee
-              IconButton(
-                onPressed: () {},
-                icon: const Icon(Icons.person_add),
-                iconSize: 40,
-                color: mainColor,
-                splashColor: Colors.transparent,
-                highlightColor: Colors.transparent,
-              ),
-              const Spacer(),
+              // IconButton(
+              //   onPressed: () {},
+              //   icon: const Icon(Icons.person_add),
+              //   iconSize: 40,
+              //   color: mainColor,
+              //   splashColor: Colors.transparent,
+              //   highlightColor: Colors.transparent,
+              // ),
+              // const Spacer(),
             ],
           ),
           const SizedBox(
@@ -225,7 +225,7 @@ class _Record extends StatefulWidget {
 
 class __RecordState extends State<_Record> {
   bool isClicked = false;
-  String employeeId = "";
+  String employeeId = "empty";
   List recordList = [];
   int recordListLength = 0;
   String text = "";

@@ -23,8 +23,10 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const AdminTablet();
-    // const EmployeeApp();
+    return
+        const AdminApp();
+        // const AdminTablet();
+        // const EmployeeApp();
   }
 }
 
