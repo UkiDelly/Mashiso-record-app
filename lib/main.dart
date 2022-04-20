@@ -24,9 +24,9 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return
-        const AdminApp();
+        // const AdminApp();
         // const AdminTablet();
-        // const EmployeeApp();
+        const EmployeeApp();
   }
 }
 

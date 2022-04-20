@@ -252,23 +252,25 @@ class _Home extends State<Home> with AutomaticKeepAliveClientMixin {
                       child: InkWell(
                         highlightColor: Colors.transparent,
                         splashFactory: NoSplash.splashFactory,
-                        onTap: () async {
-                          //get the current location
-                          getCurrentLocation();
+                        onTap: status == false
+                            ? () async {
+                                //get the current location
+                                getCurrentLocation();
 
-                          setState(() {
-                            //set the status to time out
-                            status = true;
+                                setState(() {
+                                  //set the status to time out
+                                  status = true;
 
-                            //get the current time
-                            time = DateTime.now();
+                                  //get the current time
+                                  time = DateTime.now();
 
-                            address;
-                          });
+                                  address;
+                                });
 
-                          timeInUpload();
-                          await LoginPreferences.setInOut(status!);
-                        },
+                                timeInUpload();
+                                await LoginPreferences.setInOut(status!);
+                              }
+                            : null,
                         child: const Center(
                             child: Text(
                           "IN",
@@ -297,7 +299,7 @@ class _Home extends State<Home> with AutomaticKeepAliveClientMixin {
                       child: InkWell(
                         highlightColor: Colors.transparent,
                         splashFactory: NoSplash.splashFactory,
-                        onTap: () async {
+                        onTap: status == true ? () async {
                           //get the current location
                           getCurrentLocation();
 
@@ -312,7 +314,7 @@ class _Home extends State<Home> with AutomaticKeepAliveClientMixin {
                           //send data to firebase
                           timeOutUpLoad();
                           await LoginPreferences.setInOut(status!);
-                        },
+                        } : null,
                         child: const Center(
                             child: Text(
                           "OUT",
