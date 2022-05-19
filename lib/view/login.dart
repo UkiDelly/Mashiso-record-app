@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:location/location.dart';
 import 'package:page_transition/page_transition.dart';
-import 'package:work_record_app/employee_app/preferences.dart';
 
+import '../preferences.dart';
 import 'home.dart';
 
 Color mainColor = const Color(0xffFDBF05);
@@ -41,6 +41,8 @@ class __LoginState extends State<_Login> {
   bool showPassword = false;
   String username = "", password = "", name = "";
   String userId = "";
+
+  bool hasInternet = false;
   //login function
   login() async {
     final employee = await FirebaseFirestore.instance
@@ -160,6 +162,7 @@ class __LoginState extends State<_Login> {
 
                 if (exist) {
                   await LoginPreferences.saveUserId(userId);
+                  // ignore: use_build_context_synchronously
                   Navigator.pushReplacement(
                       context,
                       PageTransition(
@@ -175,6 +178,8 @@ class __LoginState extends State<_Login> {
                   });
                 }
               },
+              style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all(mainColor)),
               child: const Text(
                 "Login",
                 style: TextStyle(
@@ -182,8 +187,6 @@ class __LoginState extends State<_Login> {
                     fontWeight: FontWeight.bold,
                     fontSize: 30),
               ),
-              style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all(mainColor)),
             ),
           ),
         ],

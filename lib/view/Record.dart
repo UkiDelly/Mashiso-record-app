@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
-import 'package:work_record_app/employee_app/preferences.dart';
+import '../preferences.dart';
 
 class Record extends StatefulWidget {
   const Record({Key? key}) : super(key: key);
@@ -56,16 +56,12 @@ class _RecordState extends State<Record> {
   }
 
   Widget recordCard(int index) {
-    final _timeIN = DateFormat.jm().format(data[index]['IN'].toDate());
-    String _timeOUT = '';
+    final timeIN = DateFormat.jm().format(data[index]['IN'].toDate());
+    String timeOUT = '';
     if (data[index]['OUT'] != null) {
-      _timeOUT = DateFormat.jm().format(data[index]['OUT'].toDate());
+      timeOUT = DateFormat.jm().format(data[index]['OUT'].toDate());
     }
-    String _date =
-        DateFormat.yMMMMd('en_US').format(data[index]['IN'].toDate());
-
-    
-
+    String date = DateFormat.yMMMMd('en_US').format(data[index]['IN'].toDate());
 
     return Card(
       elevation: 5,
@@ -81,21 +77,21 @@ class _RecordState extends State<Record> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Text(
-              _date,
+              date,
               style: const TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
             ),
             const SizedBox(
               height: 5,
             ),
             Text(
-              "IN: $_timeIN",
+              "IN: $timeIN",
               style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
                   color: Color(0xffFDBF05)),
             ),
             Text(
-              "OUT: $_timeOUT",
+              "OUT: $timeOUT",
               style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
           ],

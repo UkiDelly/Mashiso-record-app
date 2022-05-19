@@ -4,10 +4,9 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:location/location.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:work_record_app/employee_app/preferences.dart';
-
-import 'record.dart';
-import 'google_map.dart';
+import '../employee_app/record.dart';
+import '../google_map.dart';
+import '../preferences.dart';
 import 'login.dart';
 
 // ignore: must_be_immutable
@@ -55,10 +54,10 @@ class _Home extends State<Home> with AutomaticKeepAliveClientMixin {
 
   //*Send Firebase
   timeInUpload() async {
-    var _userId = LoginPreferences.getUserId();
+    var userId = LoginPreferences.getUserId();
     await FirebaseFirestore.instance
         .collection('employee')
-        .doc(_userId)
+        .doc(userId)
         .collection('record')
         .add({
       'IN': Timestamp.fromDate(time),
@@ -76,20 +75,20 @@ class _Home extends State<Home> with AutomaticKeepAliveClientMixin {
   }
 
   timeOutUpLoad() async {
-    var _userId = LoginPreferences.getUserId();
-    final _employee = await FirebaseFirestore.instance
+    var userId = LoginPreferences.getUserId();
+    final employee = await FirebaseFirestore.instance
         .collection('employee')
-        .doc(_userId)
+        .doc(userId)
         .collection('record')
         .orderBy('IN', descending: true)
         .get();
 
-    String _id = _employee.docs.first.id;
+    String id = employee.docs.first.id;
     await FirebaseFirestore.instance
         .collection('employee')
-        .doc(_userId)
+        .doc(userId)
         .collection('record')
-        .doc(_id)
+        .doc(id)
         .update({
       "OUT": Timestamp.fromDate(time),
       "locationOUT": GeoPoint(address.latitude, address.longitude)
@@ -299,22 +298,24 @@ class _Home extends State<Home> with AutomaticKeepAliveClientMixin {
                       child: InkWell(
                         highlightColor: Colors.transparent,
                         splashFactory: NoSplash.splashFactory,
-                        onTap: status == true ? () async {
-                          //get the current location
-                          getCurrentLocation();
+                        onTap: status == true
+                            ? () async {
+                                //get the current location
+                                getCurrentLocation();
 
-                          setState(() {
-                            //set the status to time out
-                            status = false;
+                                setState(() {
+                                  //set the status to time out
+                                  status = false;
 
-                            //get the current time
-                            time = DateTime.now();
-                          });
+                                  //get the current time
+                                  time = DateTime.now();
+                                });
 
-                          //send data to firebase
-                          timeOutUpLoad();
-                          await LoginPreferences.setInOut(status!);
-                        } : null,
+                                //send data to firebase
+                                timeOutUpLoad();
+                                await LoginPreferences.setInOut(status!);
+                              }
+                            : null,
                         child: const Center(
                             child: Text(
                           "OUT",

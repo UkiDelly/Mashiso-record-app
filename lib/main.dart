@@ -1,17 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/services.dart';
+import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:location/location.dart';
-import 'package:work_record_app/mobile_app/home.dart';
-import 'package:work_record_app/tablet_app/home.dart';
-
-import 'employee_app/home.dart';
-import 'employee_app/login.dart';
-import 'employee_app/preferences.dart';
+import 'package:work_record_app/preferences.dart';
+import 'view/home.dart';
+import 'view/login.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // Firebase configuration
   await Firebase.initializeApp();
 
   await LoginPreferences.init();
@@ -40,6 +38,7 @@ class EmployeeApp extends StatefulWidget {
 class _EmployeeAppState extends State<EmployeeApp> {
   String? userId = 'empty_user_id';
   var login;
+  late bool hasInternet;
 
   autoLogin() async {
     final employee = await FirebaseFirestore.instance
@@ -71,6 +70,18 @@ class _EmployeeAppState extends State<EmployeeApp> {
       _serviceEnabled;
       _permissionGranted;
     });
+  }
+
+  checkInternetConnection() async {
+    bool hasInternet = await InternetConnectionChecker().hasConnection;
+    if (!hasInternet) {
+      const AlertDialog(
+        title: Text("Warning"),
+        content: Center(
+          child: Text("Please connect to the internet."),
+        ),
+      );
+    }
   }
 
   @override
@@ -117,56 +128,3 @@ class _EmployeeAppState extends State<EmployeeApp> {
         ));
   }
 }
-
-class AdminApp extends StatelessWidget {
-  const AdminApp({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: 'Work Record App',
-        theme: ThemeData(
-            fontFamily: 'Inter',
-            primarySwatch: Colors.orange,
-            brightness: Brightness.light),
-        darkTheme: ThemeData(
-            fontFamily: 'Inter',
-            primarySwatch: Colors.orange,
-            brightness: Brightness.dark),
-        themeMode: ThemeMode.system,
-        home: const MobileHome());
-  }
-}
-
-class AdminTablet extends StatefulWidget {
-  const AdminTablet({Key? key}) : super(key: key);
-
-  @override
-  State<AdminTablet> createState() => _AdminTabletState();
-}
-
-class _AdminTabletState extends State<AdminTablet> {
-  @override
-  Widget build(BuildContext context) {
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.landscapeRight,
-    ]);
-
-    return MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: 'Work Record App',
-        theme: ThemeData(
-            fontFamily: 'Inter',
-            primarySwatch: Colors.orange,
-            brightness: Brightness.light),
-        darkTheme: ThemeData(
-            fontFamily: 'Inter',
-            primarySwatch: Colors.orange,
-            brightness: Brightness.dark),
-        themeMode: ThemeMode.system,
-        home: const TabletHome());
-  }
-}
-
-const mainColor = Color(0xffFDBF05);
