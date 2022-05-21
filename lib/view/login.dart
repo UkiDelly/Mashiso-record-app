@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:location/location.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:work_record_app/models/user.dart';
 
 import '../preferences.dart';
 import 'home.dart';
@@ -10,24 +9,19 @@ Color mainColor = const Color(0xffFDBF05);
 
 // ignore: must_be_immutable
 class Login extends StatelessWidget {
-  Location location;
-  Login({Key? key, required this.location}) : super(key: key);
+  const Login({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-          child: _Login(
-        location: location,
-      )),
+      body: Center(child: _Login()),
     );
   }
 }
 
 // ignore: must_be_immutable
 class _Login extends StatefulWidget {
-  Location location;
-  _Login({Key? key, required this.location}) : super(key: key);
+  const _Login({Key? key}) : super(key: key);
 
   @override
   State<_Login> createState() => __LoginState();
@@ -39,35 +33,8 @@ class __LoginState extends State<_Login> {
   //GlobalKey for the valdation
   dynamic exist = 'null';
   bool showPassword = false;
-  String username = "", password = "", name = "";
-  String userId = "";
 
   bool hasInternet = false;
-  //login function
-  login() async {
-    final employee = await FirebaseFirestore.instance
-        .collection('employee')
-        .where('username', isEqualTo: usernameController.text)
-        .where('password', isEqualTo: passwordController.text)
-        .get();
-
-    // check if there is data
-    if (employee.size == 0) {
-      exist = false;
-    } else {
-      userId = employee.docs.first.id;
-      name = employee.docs.first.data()['name'];
-      username = employee.docs.first.data()['username'];
-      password = employee.docs.first.data()['password'];
-      exist = employee.docs.first.exists;
-    }
-    setState(() {
-      exist;
-      name;
-      username;
-      password;
-    });
-  }
 
   @override
   void initState() {
@@ -158,17 +125,24 @@ class __LoginState extends State<_Login> {
             height: 50,
             child: ElevatedButton(
               onPressed: () async {
-                await login();
+                User user = User(
+                    username: usernameController.text,
+                    password: passwordController.text);
+
+                exist = await user.login();
+
+                setState(() {
+                  exist;
+                });
 
                 if (exist) {
-                  await LoginPreferences.saveUserId(userId);
+                  await LoginPreferences.saveUserId(user.userId);
                   // ignore: use_build_context_synchronously
                   Navigator.pushReplacement(
                       context,
                       PageTransition(
                           child: Home(
-                            name: name,
-                            location: widget.location,
+                            name: user.getUsername,
                           ),
                           type: PageTransitionType.fade));
                 } else {

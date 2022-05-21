@@ -1,20 +1,18 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:location/location.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import '../employee_app/record.dart';
+
 import '../google_map.dart';
+import '../models/timeInOut.dart';
 import '../preferences.dart';
+import 'Record.dart';
 import 'login.dart';
 
 // ignore: must_be_immutable
 class Home extends StatefulWidget {
-  Location location;
   String name;
-  Home({Key? key, required this.name, required this.location})
-      : super(key: key);
+  Home({Key? key, required this.name}) : super(key: key);
 
   @override
   State<Home> createState() => _Home();
@@ -25,22 +23,16 @@ class _Home extends State<Home> with AutomaticKeepAliveClientMixin {
   PageController pageController = PageController(initialPage: 0);
   int currentIndex = 0;
   late bool? status = false;
-  dynamic address;
+  dynamic address = "";
   DateTime time = DateTime.now();
+  TimeInOut timeInOut = TimeInOut(LoginPreferences.getUserId()!);
 
   //*Google map
   late GoogleMapController mapController;
 
-  //*Location
-  Location location = Location();
-
   //*Get the current location
-  getCurrentLocation() {
-    location.onLocationChanged.listen((location) {
-      setState(() {
-        address = location;
-      });
-    });
+  getCurrentLocation() async {
+    address = await Geolocator.getCurrentPosition();
   }
 
   //*Change the page
@@ -52,71 +44,15 @@ class _Home extends State<Home> with AutomaticKeepAliveClientMixin {
         duration: const Duration(milliseconds: 200), curve: Curves.ease);
   }
 
-  //*Send Firebase
-  timeInUpload() async {
-    var userId = LoginPreferences.getUserId();
-    await FirebaseFirestore.instance
-        .collection('employee')
-        .doc(userId)
-        .collection('record')
-        .add({
-      'IN': Timestamp.fromDate(time),
-      'locationIN': GeoPoint(address.latitude, address.longitude)
-    });
-
-    Fluttertoast.showToast(
-        msg: "Successfully Time in!",
-        toastLength: Toast.LENGTH_LONG,
-        gravity: ToastGravity.TOP,
-        timeInSecForIosWeb: 1,
-        backgroundColor: Colors.grey,
-        textColor: Colors.white,
-        fontSize: 20.0);
-  }
-
-  timeOutUpLoad() async {
-    var userId = LoginPreferences.getUserId();
-    final employee = await FirebaseFirestore.instance
-        .collection('employee')
-        .doc(userId)
-        .collection('record')
-        .orderBy('IN', descending: true)
-        .get();
-
-    String id = employee.docs.first.id;
-    await FirebaseFirestore.instance
-        .collection('employee')
-        .doc(userId)
-        .collection('record')
-        .doc(id)
-        .update({
-      "OUT": Timestamp.fromDate(time),
-      "locationOUT": GeoPoint(address.latitude, address.longitude)
-    });
-
-    Fluttertoast.showToast(
-        msg: "Successfully Time Out!",
-        toastLength: Toast.LENGTH_LONG,
-        gravity: ToastGravity.TOP,
-        timeInSecForIosWeb: 1,
-        backgroundColor: Colors.grey,
-        textColor: Colors.white,
-        fontSize: 20.0);
-  }
-
   @override
   void initState() {
     super.initState();
-    // check permission
-
-    location = widget.location;
 
     //bring the last state of the time in/out
     status = LoginPreferences.getInOut();
 
     //get the current location
-    address = "Not press yet";
-    getCurrentLocation();
+    address = getCurrentLocation();
   }
 
   @override
@@ -144,13 +80,11 @@ class _Home extends State<Home> with AutomaticKeepAliveClientMixin {
           if (index == 2) {
             //Logout if the logout button is pressed
             await LoginPreferences.saveUserId("empty_user_id");
+            // ignore: use_build_context_synchronously
             Navigator.pushReplacement(
                 context,
                 PageTransition(
-                    child: Login(
-                      location: widget.location,
-                    ),
-                    type: PageTransitionType.fade));
+                    child: const Login(), type: PageTransitionType.fade));
           }
           _changePage(index);
         },
@@ -252,7 +186,7 @@ class _Home extends State<Home> with AutomaticKeepAliveClientMixin {
                         highlightColor: Colors.transparent,
                         splashFactory: NoSplash.splashFactory,
                         onTap: status == false
-                            ? () async {
+                            ? () {
                                 //get the current location
                                 getCurrentLocation();
 
@@ -266,8 +200,9 @@ class _Home extends State<Home> with AutomaticKeepAliveClientMixin {
                                   address;
                                 });
 
-                                timeInUpload();
-                                await LoginPreferences.setInOut(status!);
+                                timeInOut.timeInUpload(
+                                    widget.name, time, address);
+                                LoginPreferences.setInOut(status!);
                               }
                             : null,
                         child: const Center(
@@ -312,7 +247,7 @@ class _Home extends State<Home> with AutomaticKeepAliveClientMixin {
                                 });
 
                                 //send data to firebase
-                                timeOutUpLoad();
+                                timeInOut.timeOutUpLoad(time, address);
                                 await LoginPreferences.setInOut(status!);
                               }
                             : null,
@@ -333,7 +268,7 @@ class _Home extends State<Home> with AutomaticKeepAliveClientMixin {
             ),
 
             //Google Map
-            GoogleMapWidget(location: location),
+            GoogleMapWidget(),
           ],
         ),
       ),

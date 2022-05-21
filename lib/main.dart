@@ -1,16 +1,19 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
-import 'package:location/location.dart';
 import 'package:work_record_app/preferences.dart';
+import 'Firebase/firebase_options.dart';
+import 'models/user.dart';
 import 'view/home.dart';
 import 'view/login.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // Firebase configuration
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 
   await LoginPreferences.init();
   runApp(const MyApp());
@@ -21,10 +24,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return
-        // const AdminApp();
-        // const AdminTablet();
-        const EmployeeApp();
+    return const EmployeeApp();
   }
 }
 
@@ -39,31 +39,24 @@ class _EmployeeAppState extends State<EmployeeApp> {
   String? userId = 'empty_user_id';
   var login;
   late bool hasInternet;
-
-  autoLogin() async {
-    final employee = await FirebaseFirestore.instance
-        .collection('employee')
-        .doc(userId)
-        .get();
-    return employee.data();
-  }
+  User user = User();
 
 //*Service and permission
   late bool _serviceEnabled;
-  late PermissionStatus _permissionGranted;
-  Location location = Location();
+  late LocationPermission _permissionGranted;
+
   //*check the permission
   checkPermission() async {
     //check the service in enabled
-    _serviceEnabled = await location.serviceEnabled();
+    _serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!_serviceEnabled) {
-      _serviceEnabled = await location.requestService();
+      await Geolocator.requestPermission();
     }
 
     //*check the permission is enabled
-    _permissionGranted = await location.hasPermission();
-    if (_permissionGranted == PermissionStatus.denied) {
-      _permissionGranted = await location.requestPermission();
+    _permissionGranted = await Geolocator.checkPermission();
+    if (_permissionGranted == LocationPermission.denied) {
+      _permissionGranted = await Geolocator.requestPermission();
     }
 
     setState(() {
@@ -88,7 +81,7 @@ class _EmployeeAppState extends State<EmployeeApp> {
   void initState() {
     super.initState();
     userId = LoginPreferences.getUserId();
-    login = autoLogin();
+    login = user.auto_login(userId);
     checkPermission();
   }
 
@@ -113,7 +106,6 @@ class _EmployeeAppState extends State<EmployeeApp> {
               Map<String, dynamic> data = user.data! as Map<String, dynamic>;
               return Home(
                 name: data['name'],
-                location: location,
               );
             } else if (user.connectionState == ConnectionState.waiting) {
               return Container(
@@ -121,9 +113,7 @@ class _EmployeeAppState extends State<EmployeeApp> {
                 child: const Center(child: CircularProgressIndicator()),
               );
             }
-            return Login(
-              location: location,
-            );
+            return const Login();
           },
         ));
   }

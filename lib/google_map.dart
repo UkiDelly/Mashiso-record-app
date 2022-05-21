@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 // ignore: must_be_immutable
 class GoogleMapWidget extends StatefulWidget {
-  dynamic location;
-  GoogleMapWidget({Key? key, required this.location}) : super(key: key);
+  const GoogleMapWidget({Key? key}) : super(key: key);
 
   @override
   State<GoogleMapWidget> createState() => _GoogleMapWidgetState();
@@ -16,14 +16,13 @@ class _GoogleMapWidgetState extends State<GoogleMapWidget> {
   final LatLng _position = const LatLng(10.682024, 122.954228);
 
   // set the location when the map created
-  void _onMapCreated(GoogleMapController controller) {
+  void _onMapCreated(GoogleMapController controller) async {
     mapController = controller;
 
     // listen for the location
-    widget.location.onLocationChanged.listen((l) {
-      mapController.animateCamera(CameraUpdate.newCameraPosition(
-          CameraPosition(target: LatLng(l.latitude!, l.longitude!), zoom: 70)));
-    });
+    var location = await Geolocator.getCurrentPosition();
+    mapController.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
+        target: LatLng(location.latitude, location.longitude), zoom: 70)));
   }
 
   @override
@@ -43,7 +42,7 @@ class _GoogleMapWidgetState extends State<GoogleMapWidget> {
         child: GoogleMap(
           myLocationButtonEnabled: true,
           mapType: MapType.normal,
-          onMapCreated: _onMapCreated,
+          // onMapCreated: _onMapCreated,
           initialCameraPosition: CameraPosition(target: _position, zoom: 70),
           myLocationEnabled: true,
         ),
